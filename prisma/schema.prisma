@@ -1,0 +1,473 @@
+// This is your Prisma schema file for AI Benefits Tracker
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum ProjectCategory {
+  AI_INITIATIVE
+  AI_AGENT
+  PROMPT_LIBRARY
+  GEN_AI_PRODUCTION
+  RISK_MANAGEMENT
+  OTHER
+}
+
+enum ProjectStatus {
+  PLANNING
+  PILOT
+  SCALING
+  PRODUCTION
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum MetricType {
+  OPERATIONAL_EFFICIENCY
+  FINANCIAL_PERFORMANCE
+  CUSTOMER_SATISFACTION
+  EMPLOYEE_PRODUCTIVITY
+  QUALITY_IMPROVEMENT
+  RISK_COMPLIANCE
+  ADOPTION_ENGAGEMENT
+  INNOVATION_VELOCITY
+}
+
+enum FeedbackSentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+enum RiskSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum RiskStatus {
+  OPEN
+  MITIGATED
+  ACCEPTED
+  CLOSED
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+enum AlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+enum PhaseStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+}
+
+// ============================================================================
+// CORE MODELS
+// ============================================================================
+
+model Department {
+  id                String       @id @default(uuid())
+  name              String
+  description       String?
+  parentDepartmentId String?
+  parentDepartment  Department?  @relation("DepartmentHierarchy", fields: [parentDepartmentId], references: [id], onDelete: SetNull)
+  childDepartments  Department[] @relation("DepartmentHierarchy")
+  projects          AIProject[]
+  users             User[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model User {
+  id                    String            @id @default(uuid())
+  email                 String            @unique
+  name                  String
+  password              String?           // Hashed password
+  role                  String?
+  emailVerified         DateTime?
+  image                 String?
+  departmentId          String?
+  department            Department?       @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  ownedProjects         AIProject[]       @relation("ProjectOwner")
+  feedback              UserFeedback[]
+  promptsCreated        PromptLibrary[]
+  risksOwned            RiskAssessment[]
+  alertsAcknowledged    Alert[]
+  accounts              Account[]
+  sessions              Session[]
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+}
+
+// NextAuth.js Models
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+model AIProject {
+  id                      String               @id @default(uuid())
+  name                    String
+  description             String?
+  category                ProjectCategory
+  status                  ProjectStatus        @default(PLANNING)
+  departmentId            String?
+  department              Department?          @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  ownerId                 String
+  owner                   User                 @relation("ProjectOwner", fields: [ownerId], references: [id])
+  startDate               DateTime?
+  targetCompletionDate    DateTime?
+  actualCompletionDate    DateTime?
+  budgetAllocated         Float?
+  budgetSpent             Float?
+  expectedRoiPercentage   Float?
+  strategicPriority       Int?                 // 1-5 scale
+  
+  // Relations
+  baselineMetrics         BaselineMetric[]
+  kpiDefinitions          KPIDefinition[]
+  metricsTimeseries       MetricTimeseries[]
+  userFeedback            UserFeedback[]
+  roiCalculations         ROICalculation[]
+  agentPerformance        AgentPerformance[]
+  promptLibrary           PromptLibrary[]
+  riskAssessments         RiskAssessment[]
+  complianceChecks        ComplianceCheck[]
+  alerts                  Alert[]
+  phases                  Phase[]
+  
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+}
+
+// ============================================================================
+// BASELINE & METRICS
+// ============================================================================
+
+model BaselineMetric {
+  id                String      @id @default(uuid())
+  projectId         String
+  project           AIProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  metricName        String
+  metricValue       Float
+  metricUnit        String?
+  measurementDate   DateTime
+  notes             String?
+  createdAt         DateTime    @default(now())
+}
+
+model KPIDefinition {
+  id                    String              @id @default(uuid())
+  projectId             String
+  project               AIProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  kpiName               String
+  metricType            MetricType
+  description           String?
+  targetValue           Float?
+  unit                  String?
+  calculationFormula    String?
+  dataSource            String?
+  collectionFrequency   String?             // 'daily', 'weekly', 'monthly'
+  isActive              Boolean             @default(true)
+  
+  // Relations
+  metricsTimeseries     MetricTimeseries[]
+  
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+}
+
+model MetricTimeseries {
+  id            String         @id @default(uuid())
+  time          DateTime
+  projectId     String
+  project       AIProject      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  kpiId         String
+  kpi           KPIDefinition  @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+  metricValue   Float
+  metadata      String?        // JSON stored as string
+  createdAt     DateTime       @default(now())
+  
+  @@index([projectId, time])
+  @@index([kpiId, time])
+}
+
+// ============================================================================
+// FEEDBACK & ROI
+// ============================================================================
+
+model UserFeedback {
+  id            String              @id @default(uuid())
+  projectId     String
+  project       AIProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User                @relation(fields: [userId], references: [id])
+  rating        Int?                // 1-5 scale
+  sentiment     FeedbackSentiment?
+  feedbackText  String?
+  category      String?
+  submittedAt   DateTime            @default(now())
+}
+
+model ROICalculation {
+  id                      String      @id @default(uuid())
+  projectId               String
+  project                 AIProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  calculationDate         DateTime
+  
+  // Costs
+  implementationCost      Float?
+  operationalCost         Float?
+  maintenanceCost         Float?
+  
+  // Benefits
+  costSavings             Float?
+  revenueIncrease         Float?
+  productivityGainsValue  Float?
+  
+  notes                   String?
+  createdAt               DateTime    @default(now())
+}
+
+// ============================================================================
+// AI AGENT SPECIFIC
+// ============================================================================
+
+model AgentPerformance {
+  id                    String      @id @default(uuid())
+  projectId             String
+  project               AIProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  agentName             String
+  measurementTimestamp  DateTime
+  
+  // Performance metrics
+  tasksAssigned         Int?
+  tasksCompleted        Int?
+  tasksFailed           Int?
+  successRate           Float?
+  averageCompletionTime String?     // Duration stored as string
+  errorRate             Float?
+  autonomyScore         Float?      // Percentage
+  
+  // Quality metrics
+  accuracyScore         Float?
+  userSatisfactionScore Float?
+  
+  metadata              String?     // JSON stored as string
+  createdAt             DateTime    @default(now())
+  
+  @@index([projectId, measurementTimestamp])
+}
+
+// ============================================================================
+// PROMPT LIBRARY
+// ============================================================================
+
+model PromptLibrary {
+  id            String            @id @default(uuid())
+  projectId     String?
+  project       AIProject?        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  promptTitle   String
+  promptText    String
+  category      String?
+  tags          String?           // Comma-separated tags
+  authorId      String
+  author        User              @relation(fields: [authorId], references: [id])
+  useCase       String?
+  
+  // Metrics
+  usageCount    Int               @default(0)
+  averageRating Float?
+  lastUsedAt    DateTime?
+  
+  version       Int               @default(1)
+  isActive      Boolean           @default(true)
+  
+  usageLog      PromptUsageLog[]
+  
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model PromptUsageLog {
+  id              String         @id @default(uuid())
+  promptId        String
+  prompt          PromptLibrary  @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  userId          String
+  usedAt          DateTime       @default(now())
+  rating          Int?           // 1-5 scale
+  feedback        String?
+  executionTimeMs Int?
+}
+
+// ============================================================================
+// RISK & COMPLIANCE
+// ============================================================================
+
+model RiskAssessment {
+  id                String       @id @default(uuid())
+  projectId         String
+  project           AIProject    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  riskTitle         String
+  riskDescription   String?
+  category          String?      // 'security', 'compliance', 'operational', 'reputational'
+  severity          RiskSeverity
+  likelihood        Int          // 1-5 scale
+  status            RiskStatus   @default(OPEN)
+  mitigationPlan    String?
+  ownerId           String
+  owner             User         @relation(fields: [ownerId], references: [id])
+  identifiedDate    DateTime
+  reviewDate        DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model ComplianceCheck {
+  id                  String      @id @default(uuid())
+  projectId           String
+  project             AIProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  complianceFramework String      // 'GDPR', 'SOC2', 'ISO27001', etc.
+  requirementName     String
+  isCompliant         Boolean?
+  lastCheckedAt       DateTime?
+  evidenceUrl         String?
+  notes               String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+}
+
+// ============================================================================
+// ALERTS
+// ============================================================================
+
+model Alert {
+  id              String         @id @default(uuid())
+  projectId       String?
+  project         AIProject?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  alertTitle      String
+  alertMessage    String?
+  severity        AlertSeverity
+  status          AlertStatus    @default(ACTIVE)
+  triggeredAt     DateTime       @default(now())
+  acknowledgedAt  DateTime?
+  resolvedAt      DateTime?
+  acknowledgedBy  String?
+  acknowledgedByUser User?       @relation(fields: [acknowledgedBy], references: [id])
+  metadata        String?        // JSON stored as string
+}
+
+// ============================================================================
+// ROADMAP / TIMELINE
+// ============================================================================
+
+model Phase {
+  id                String        @id @default(uuid())
+  projectId         String
+  project           AIProject     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phaseName         String
+  description       String?
+  phaseOrder        Int           // Order in sequence
+  status            PhaseStatus   @default(NOT_STARTED)
+  startDate         DateTime?
+  endDate           DateTime?
+  targetEndDate     DateTime?
+  progressPercentage Float?       @default(0)
+  
+  milestones        Milestone[]
+  dependsOn         PhaseDependency[] @relation("DependentPhase")
+  requiredBy        PhaseDependency[] @relation("RequiredPhase")
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model Milestone {
+  id            String      @id @default(uuid())
+  phaseId       String
+  phase         Phase       @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  milestoneName String
+  description   String?
+  targetDate    DateTime?
+  completedDate DateTime?
+  isCompleted   Boolean     @default(false)
+  deliverables  String?     // Comma-separated or JSON
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model PhaseDependency {
+  id              String   @id @default(uuid())
+  dependentPhaseId String
+  dependentPhase  Phase    @relation("DependentPhase", fields: [dependentPhaseId], references: [id], onDelete: Cascade)
+  requiredPhaseId String
+  requiredPhase   Phase    @relation("RequiredPhase", fields: [requiredPhaseId], references: [id], onDelete: Cascade)
+  dependencyType  String?  // 'finish-to-start', 'start-to-start', etc.
+  createdAt       DateTime @default(now())
+  
+  @@unique([dependentPhaseId, requiredPhaseId])
+}
