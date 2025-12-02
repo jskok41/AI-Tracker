@@ -121,7 +121,12 @@ export default async function RoadmapPage() {
               <div className="space-y-1">
                 <div className="text-xs text-muted-foreground">Active Projects</div>
                 <div className="text-2xl font-bold">
-                  {projects.filter(p => p.status === 'IN_PROGRESS' || p.status === 'PLANNING').length}
+                  {projects.filter(p => 
+                    p.status === 'PLANNING' || 
+                    p.status === 'PILOT' || 
+                    p.status === 'SCALING' || 
+                    p.status === 'PRODUCTION'
+                  ).length}
                 </div>
               </div>
             </CardContent>
