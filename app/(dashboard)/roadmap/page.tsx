@@ -1,17 +1,14 @@
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Timeline } from '@/components/roadmap/timeline';
-import { ProjectSelector } from '@/components/roadmap/project-selector';
+import { Card, CardContent } from '@/components/ui/card';
+import { ProjectRoadmapCard } from '@/components/roadmap/project-roadmap-card';
 import { RoadmapRefreshButton } from '@/components/roadmap/roadmap-refresh-button';
-import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { formatDate } from '@/lib/utils';
 import prisma from '@/lib/db';
-import { FolderKanban, ExternalLink } from 'lucide-react';
+import { FolderKanban } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
-async function getAllProjects() {
+async function getAllProjectsWithRoadmaps() {
   return await prisma.aIProject.findMany({
     where: {
       phases: {
@@ -22,48 +19,6 @@ async function getAllProjects() {
       id: true,
       name: true,
       status: true,
-    },
-    orderBy: {
-      name: 'asc',
-    },
-  });
-}
-
-async function getProjectRoadmap(projectId?: string) {
-  // Get first project with phases if no projectId specified
-  if (!projectId) {
-    const firstProject = await prisma.aIProject.findFirst({
-      where: {
-        phases: {
-          some: {},
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        startDate: true,
-        targetCompletionDate: true,
-        phases: {
-          orderBy: { phaseOrder: 'asc' },
-          include: {
-            milestones: {
-              orderBy: { targetDate: 'asc' },
-            },
-          },
-        },
-      },
-    });
-
-    if (!firstProject) return null;
-
-    return firstProject;
-  }
-
-  const project = await prisma.aIProject.findUnique({
-    where: { id: projectId },
-    select: {
-      id: true,
-      name: true,
       startDate: true,
       targetCompletionDate: true,
       phases: {
@@ -75,53 +30,31 @@ async function getProjectRoadmap(projectId?: string) {
         },
       },
     },
+    orderBy: {
+      name: 'asc',
+    },
   });
-
-  return project;
 }
 
-export default async function RoadmapPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ projectId?: string }>;
-}) {
-  const { projectId } = await searchParams;
-  const projects = await getAllProjects();
-  const project = await getProjectRoadmap(projectId);
+export default async function RoadmapPage() {
+  const projects = await getAllProjectsWithRoadmaps();
 
-  if (!project) {
-    return (
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Project Roadmap</h1>
-          <p className="text-muted-foreground">
-            Visualize project phases and milestones
-          </p>
-        </div>
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <p className="text-muted-foreground">
-              No projects with roadmap data found. Create phases and milestones for your projects to view them here.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Calculate overall progress
-  const totalPhases = project.phases.length;
-  const completedPhases = project.phases.filter(p => p.status === 'COMPLETED').length;
-  const overallProgress = totalPhases > 0 ? (completedPhases / totalPhases) * 100 : 0;
-
-  // Find current phase
-  const currentPhase = project.phases.find(p => p.status === 'IN_PROGRESS') || 
-                       project.phases.find(p => p.status === 'NOT_STARTED');
-
-  // Count milestones
-  const totalMilestones = project.phases.reduce((sum, p) => sum + p.milestones.length, 0);
-  const completedMilestones = project.phases.reduce(
-    (sum, p) => sum + p.milestones.filter(m => m.isCompleted).length, 
+  // Calculate overall statistics across all projects
+  const totalProjects = projects.length;
+  const totalPhases = projects.reduce((sum, p) => sum + p.phases.length, 0);
+  const completedPhases = projects.reduce(
+    (sum, p) => sum + p.phases.filter(ph => ph.status === 'COMPLETED').length,
+    0
+  );
+  const totalMilestones = projects.reduce(
+    (sum, p) => sum + p.phases.reduce((phaseSum, ph) => phaseSum + ph.milestones.length, 0),
+    0
+  );
+  const completedMilestones = projects.reduce(
+    (sum, p) => sum + p.phases.reduce(
+      (phaseSum, ph) => phaseSum + ph.milestones.filter(m => m.isCompleted).length,
+      0
+    ),
     0
   );
 
@@ -132,7 +65,7 @@ export default async function RoadmapPage({
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Project Roadmap</h1>
           <p className="text-muted-foreground">
-            Track project phases, milestones, and implementation progress
+            Track project phases, milestones, and implementation progress across all projects
           </p>
         </div>
         
@@ -147,137 +80,75 @@ export default async function RoadmapPage({
               View All Projects
             </Button>
           </Link>
-          
-          {/* Project Selector */}
-          {projects.length > 1 && (
-            <ProjectSelector projects={projects} currentProjectId={project.id} />
-          )}
         </div>
       </div>
 
-      {/* Project Overview */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Overall Progress
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="text-2xl font-bold">{overallProgress.toFixed(0)}%</div>
-              <Progress value={overallProgress} />
-              <p className="text-xs text-muted-foreground">
-                {completedPhases} of {totalPhases} phases completed
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Current Phase
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1">
-              <div className="text-2xl font-bold">
-                {currentPhase ? currentPhase.phaseName : 'All Complete'}
+      {/* Overall Statistics */}
+      {totalProjects > 0 && (
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Total Projects</div>
+                <div className="text-2xl font-bold">{totalProjects}</div>
               </div>
-              {currentPhase && (
-                <p className="text-xs text-muted-foreground">
-                  {currentPhase.progressPercentage}% progress
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Milestones
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1">
-              <div className="text-2xl font-bold">
-                {completedMilestones}/{totalMilestones}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Total Phases</div>
+                <div className="text-2xl font-bold">{completedPhases}/{totalPhases}</div>
+                <div className="text-xs text-muted-foreground">
+                  {totalPhases > 0 ? `${((completedPhases / totalPhases) * 100).toFixed(0)}% complete` : 'No phases'}
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {totalMilestones > 0 
-                  ? `${((completedMilestones / totalMilestones) * 100).toFixed(0)}% complete` 
-                  : 'No milestones'}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Project Timeline Info */}
-      {(project.startDate || project.targetCompletionDate) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Project Timeline</CardTitle>
-            <CardDescription>
-              Overall project schedule and boundaries
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-6 text-sm">
-              {project.startDate && (
-                <div>
-                  <span className="text-muted-foreground">Project Start: </span>
-                  <span className="font-medium">{formatDate(project.startDate)}</span>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Total Milestones</div>
+                <div className="text-2xl font-bold">{completedMilestones}/{totalMilestones}</div>
+                <div className="text-xs text-muted-foreground">
+                  {totalMilestones > 0 ? `${((completedMilestones / totalMilestones) * 100).toFixed(0)}% complete` : 'No milestones'}
                 </div>
-              )}
-              {project.targetCompletionDate && (
-                <div>
-                  <span className="text-muted-foreground">Target Completion: </span>
-                  <span className="font-medium">{formatDate(project.targetCompletionDate)}</span>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Active Projects</div>
+                <div className="text-2xl font-bold">
+                  {projects.filter(p => p.status === 'IN_PROGRESS' || p.status === 'PLANNING').length}
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
-      {/* Timeline */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Link 
-                  href={`/projects/${project.id}`}
-                  className="hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  {project.name}
-                  <ExternalLink className="h-4 w-4" />
-                </Link>
-                <span className="text-muted-foreground font-normal">- Implementation Timeline</span>
-              </CardTitle>
-              <CardDescription>
-                Project phases with milestones and deliverables
-                {project.startDate && project.targetCompletionDate && (
-                  <span className="block mt-1">
-                    Project timeline: {formatDate(project.startDate)} → {formatDate(project.targetCompletionDate)}
-                  </span>
-                )}
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Timeline 
-            phases={project.phases}
-            currentPhaseId={currentPhase?.id}
-            projectStartDate={project.startDate}
-            projectTargetCompletionDate={project.targetCompletionDate}
-          />
-        </CardContent>
-      </Card>
+      {/* Projects List */}
+      {projects.length === 0 ? (
+        <Card>
+          <CardContent className="pt-6 text-center">
+            <p className="text-muted-foreground">
+              No projects with roadmap data found. Create phases and milestones for your projects to view them here.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {projects.map((project, index) => (
+            <ProjectRoadmapCard 
+              key={project.id} 
+              project={project}
+              defaultOpen={index === 0} // Open first project by default
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
