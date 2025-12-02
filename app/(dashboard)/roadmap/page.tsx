@@ -1,9 +1,13 @@
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Timeline } from '@/components/roadmap/timeline';
 import { ProjectSelector } from '@/components/roadmap/project-selector';
+import { RoadmapRefreshButton } from '@/components/roadmap/roadmap-refresh-button';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
 import prisma from '@/lib/db';
+import { FolderKanban, ExternalLink } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,10 +136,23 @@ export default async function RoadmapPage({
           </p>
         </div>
         
-        {/* Project Selector */}
-        {projects.length > 1 && (
-          <ProjectSelector projects={projects} currentProjectId={project.id} />
-        )}
+        <div className="flex items-center gap-3">
+          {/* Refresh Button */}
+          <RoadmapRefreshButton />
+          
+          {/* View All Projects Link */}
+          <Link href="/projects">
+            <Button variant="outline" size="sm">
+              <FolderKanban className="h-4 w-4 mr-2" />
+              View All Projects
+            </Button>
+          </Link>
+          
+          {/* Project Selector */}
+          {projects.length > 1 && (
+            <ProjectSelector projects={projects} currentProjectId={project.id} />
+          )}
+        </div>
       </div>
 
       {/* Project Overview */}
@@ -229,15 +246,28 @@ export default async function RoadmapPage({
       {/* Timeline */}
       <Card>
         <CardHeader>
-          <CardTitle>{project.name} - Implementation Timeline</CardTitle>
-          <CardDescription>
-            Project phases with milestones and deliverables
-            {project.startDate && project.targetCompletionDate && (
-              <span className="block mt-1">
-                Project timeline: {formatDate(project.startDate)} → {formatDate(project.targetCompletionDate)}
-              </span>
-            )}
-          </CardDescription>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Link 
+                  href={`/projects/${project.id}`}
+                  className="hover:text-primary transition-colors flex items-center gap-2"
+                >
+                  {project.name}
+                  <ExternalLink className="h-4 w-4" />
+                </Link>
+                <span className="text-muted-foreground font-normal">- Implementation Timeline</span>
+              </CardTitle>
+              <CardDescription>
+                Project phases with milestones and deliverables
+                {project.startDate && project.targetCompletionDate && (
+                  <span className="block mt-1">
+                    Project timeline: {formatDate(project.startDate)} → {formatDate(project.targetCompletionDate)}
+                  </span>
+                )}
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Timeline 

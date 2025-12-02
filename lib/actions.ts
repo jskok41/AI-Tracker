@@ -232,6 +232,7 @@ export async function updateProjectStatus(projectId: string, status: ProjectStat
 
     revalidatePath('/projects');
     revalidatePath(`/projects/${projectId}`);
+    revalidatePath('/roadmap');
     return { success: true, data: project };
   } catch (error) {
     console.error('Failed to update project status:', error);

@@ -1,9 +1,11 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/dashboard/status-badge';
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { formatDate } from '@/lib/utils';
-import { DollarSign, TrendingUp, Target, AlertTriangle, Calendar, User } from 'lucide-react';
+import { DollarSign, TrendingUp, Target, AlertTriangle, Calendar, User, Map } from 'lucide-react';
 import prisma from '@/lib/db';
 import { format } from 'date-fns';
 import { ProjectStatusControl } from '@/components/dashboard/project-status-control';
@@ -107,7 +109,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* Project Meta */}
-        <div className="flex flex-wrap gap-6 text-sm">
+        <div className="flex flex-wrap items-center gap-6 text-sm">
           <div className="flex items-center gap-2">
             <User className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Owner:</span>
@@ -126,6 +128,14 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               <span className="text-muted-foreground">Started:</span>
               <span className="font-medium">{formatDate(project.startDate)}</span>
             </div>
+          )}
+          {project.phases.length > 0 && (
+            <Link href={`/roadmap?projectId=${project.id}`}>
+              <Button variant="outline" size="sm">
+                <Map className="h-4 w-4 mr-2" />
+                View Roadmap
+              </Button>
+            </Link>
           )}
         </div>
       </div>

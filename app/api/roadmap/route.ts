@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 
 export async function GET(request: NextRequest) {
@@ -97,6 +98,11 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      // Revalidate roadmap and project pages
+      revalidatePath('/roadmap');
+      revalidatePath(`/projects/${body.projectId}`);
+      revalidatePath('/projects');
+
       return NextResponse.json(phase, { status: 201 });
     } else if (type === 'milestone') {
       const milestone = await prisma.milestone.create({
@@ -108,9 +114,18 @@ export async function POST(request: NextRequest) {
           deliverables: body.deliverables,
         },
         include: {
-          phase: true,
+          phase: {
+            include: {
+              project: true,
+            },
+          },
         },
       });
+
+      // Revalidate roadmap and project pages
+      revalidatePath('/roadmap');
+      revalidatePath(`/projects/${milestone.phase.projectId}`);
+      revalidatePath('/projects');
 
       return NextResponse.json(milestone, { status: 201 });
     }

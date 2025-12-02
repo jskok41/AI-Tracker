@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 
 export async function PATCH(
@@ -28,6 +29,11 @@ export async function PATCH(
         milestones: true,
       },
     });
+
+    // Revalidate roadmap and project pages to reflect changes
+    revalidatePath('/roadmap');
+    revalidatePath(`/projects/${phase.projectId}`);
+    revalidatePath('/projects');
 
     return NextResponse.json(phase);
   } catch (error) {
