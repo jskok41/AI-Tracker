@@ -16,6 +16,16 @@ const projectSchema = z.object({
   budgetAllocated: z.number().min(0).optional(),
   startDate: z.date().nullable(),
   targetCompletionDate: z.date().nullable(),
+  // Key Highlight Remarks
+  team: z.string().optional(),
+  ownerContact: z.string().optional(),
+  problemStatement: z.string().optional(),
+  aiMlApproach: z.string().optional(),
+  deploymentEnvironment: z.string().optional(),
+  benefitRealized: z.string().optional(),
+  validationMethod: z.string().optional(),
+  currentBlockers: z.string().optional(),
+  nextSteps: z.string().optional(),
 });
 
 const promptSchema = z.object({
@@ -53,6 +63,16 @@ export async function createProject(formData: FormData) {
       budgetAllocated: formData.get('budgetAllocated') 
         ? parseFloat(formData.get('budgetAllocated') as string) 
         : undefined,
+      // Key Highlight Remarks
+      team: formData.get('team') as string || undefined,
+      ownerContact: formData.get('ownerContact') as string || undefined,
+      problemStatement: formData.get('problemStatement') as string || undefined,
+      aiMlApproach: formData.get('aiMlApproach') as string || undefined,
+      deploymentEnvironment: formData.get('deploymentEnvironment') as string || undefined,
+      benefitRealized: formData.get('benefitRealized') as string || undefined,
+      validationMethod: formData.get('validationMethod') as string || undefined,
+      currentBlockers: formData.get('currentBlockers') as string || undefined,
+      nextSteps: formData.get('nextSteps') as string || undefined,
     };
 
     const validated = projectSchema.parse(data);
@@ -202,6 +222,16 @@ export async function updateProject(id: string, formData: FormData) {
       targetCompletionDate: targetCompletionDateValue && targetCompletionDateValue.trim()
         ? new Date(targetCompletionDateValue)
         : null,
+      // Key Highlight Remarks
+      team: formData.get('team') as string || undefined,
+      ownerContact: formData.get('ownerContact') as string || undefined,
+      problemStatement: formData.get('problemStatement') as string || undefined,
+      aiMlApproach: formData.get('aiMlApproach') as string || undefined,
+      deploymentEnvironment: formData.get('deploymentEnvironment') as string || undefined,
+      benefitRealized: formData.get('benefitRealized') as string || undefined,
+      validationMethod: formData.get('validationMethod') as string || undefined,
+      currentBlockers: formData.get('currentBlockers') as string || undefined,
+      nextSteps: formData.get('nextSteps') as string || undefined,
     };
 
     const validated = projectSchema.parse(data);

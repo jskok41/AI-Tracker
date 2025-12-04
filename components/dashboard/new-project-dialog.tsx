@@ -339,6 +339,101 @@ export function NewProjectDialog({ departments, users }: NewProjectDialogProps) 
                 min="0"
               />
             </div>
+
+            {/* Key Highlight Remarks Section */}
+            <div className="border-t pt-4 mt-4">
+              <h3 className="text-lg font-semibold mb-4">Key Highlight Remarks</h3>
+              
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="team">Department & Team (TEST/MDW, line/tool/module)</Label>
+                  <Input
+                    id="team"
+                    name="team"
+                    placeholder="e.g., TEST/MDW, Line 5, Tool XYZ"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="ownerContact">Project Owner Contact</Label>
+                  <Input
+                    id="ownerContact"
+                    name="ownerContact"
+                    placeholder="e.g., email@company.com, +1-234-567-8900"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="problemStatement">Problem Statement</Label>
+                  <Textarea
+                    id="problemStatement"
+                    name="problemStatement"
+                    placeholder="Describe the problem this project aims to solve"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="aiMlApproach">AI/ML Approach</Label>
+                  <Textarea
+                    id="aiMlApproach"
+                    name="aiMlApproach"
+                    placeholder="e.g., classification, anomaly detection, forecasting; tools/platforms used"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="deploymentEnvironment">Deployment Status & Environment</Label>
+                  <Textarea
+                    id="deploymentEnvironment"
+                    name="deploymentEnvironment"
+                    placeholder="e.g., PoC/Pilot/Production; Python, Databricks, Power BI, Copilot Studio"
+                    rows={2}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="benefitRealized">Benefit Realized</Label>
+                  <Textarea
+                    id="benefitRealized"
+                    name="benefitRealized"
+                    placeholder="Quantify with before/after baselines, include cost/time/quality KPIs"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="validationMethod">Validation Method</Label>
+                  <Textarea
+                    id="validationMethod"
+                    name="validationMethod"
+                    placeholder="e.g., A/B trial, control chart, retrospection window, peer review"
+                    rows={2}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="currentBlockers">Current Blockers / Support Needed</Label>
+                  <Textarea
+                    id="currentBlockers"
+                    name="currentBlockers"
+                    placeholder="e.g., data, infra, access, DS resourcing"
+                    rows={2}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="nextSteps">Next Steps</Label>
+                  <Textarea
+                    id="nextSteps"
+                    name="nextSteps"
+                    placeholder="Scale plan, roadmap, dependencies"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <DialogFooter>

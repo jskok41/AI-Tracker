@@ -187,6 +187,17 @@ model AIProject {
   expectedRoiPercentage   Float?
   strategicPriority       Int?                 // 1-5 scale
   
+  // Key Highlight Remarks
+  team                    String?              // Department & team (TEST/MDW, line/tool/module)
+  ownerContact            String?              // Project owner contact information
+  problemStatement        String?              // Problem statement
+  aiMlApproach            String?              // AI/ML approach (e.g., classification, anomaly detection, forecasting; tools/platforms used)
+  deploymentEnvironment   String?              // Deployment environment (e.g., Python, Databricks, Power BI, Copilot Studio)
+  benefitRealized         String?              // Benefit realized (quantify with before/after baselines, include cost/time/quality KPIs)
+  validationMethod        String?              // Validation method (A/B trial, control chart, retrospection window, peer review)
+  currentBlockers         String?              // Current blockers / support needed (data, infra, access, DS resourcing)
+  nextSteps               String?              // Next steps (scale plan, roadmap, dependencies)
+  
   // Relations
   baselineMetrics         BaselineMetric[]
   kpiDefinitions          KPIDefinition[]

@@ -33,6 +33,16 @@ interface Project {
   openRisks?: number;
   startDate?: Date | null;
   targetCompletionDate?: Date | null;
+  // Key Highlight Remarks
+  team?: string | null;
+  ownerContact?: string | null;
+  problemStatement?: string | null;
+  aiMlApproach?: string | null;
+  deploymentEnvironment?: string | null;
+  benefitRealized?: string | null;
+  validationMethod?: string | null;
+  currentBlockers?: string | null;
+  nextSteps?: string | null;
 }
 
 interface ExpandableProjectListProps {
@@ -284,6 +294,72 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                       </div>
                     </div>
                   </div>
+
+                  {/* Key Highlight Remarks */}
+                  {(project.team || project.ownerContact || project.problemStatement || 
+                    project.aiMlApproach || project.deploymentEnvironment || 
+                    project.benefitRealized || project.validationMethod || 
+                    project.currentBlockers || project.nextSteps) && (
+                    <div className="mt-6 pt-6 border-t">
+                      <h4 className="text-sm font-semibold text-muted-foreground mb-4">Key Highlight Remarks</h4>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {project.team && (
+                          <div className="space-y-1">
+                            <div className="text-xs font-medium text-muted-foreground">Department & Team</div>
+                            <div className="text-sm">{project.team}</div>
+                          </div>
+                        )}
+                        {project.ownerContact && (
+                          <div className="space-y-1">
+                            <div className="text-xs font-medium text-muted-foreground">Owner Contact</div>
+                            <div className="text-sm">{project.ownerContact}</div>
+                          </div>
+                        )}
+                        {project.problemStatement && (
+                          <div className="space-y-1 md:col-span-2">
+                            <div className="text-xs font-medium text-muted-foreground">Problem Statement</div>
+                            <div className="text-sm whitespace-pre-wrap">{project.problemStatement}</div>
+                          </div>
+                        )}
+                        {project.aiMlApproach && (
+                          <div className="space-y-1 md:col-span-2">
+                            <div className="text-xs font-medium text-muted-foreground">AI/ML Approach</div>
+                            <div className="text-sm whitespace-pre-wrap">{project.aiMlApproach}</div>
+                          </div>
+                        )}
+                        {project.deploymentEnvironment && (
+                          <div className="space-y-1 md:col-span-2">
+                            <div className="text-xs font-medium text-muted-foreground">Deployment Status & Environment</div>
+                            <div className="text-sm whitespace-pre-wrap">{project.deploymentEnvironment}</div>
+                          </div>
+                        )}
+                        {project.benefitRealized && (
+                          <div className="space-y-1 md:col-span-2">
+                            <div className="text-xs font-medium text-muted-foreground">Benefit Realized</div>
+                            <div className="text-sm whitespace-pre-wrap">{project.benefitRealized}</div>
+                          </div>
+                        )}
+                        {project.validationMethod && (
+                          <div className="space-y-1 md:col-span-2">
+                            <div className="text-xs font-medium text-muted-foreground">Validation Method</div>
+                            <div className="text-sm whitespace-pre-wrap">{project.validationMethod}</div>
+                          </div>
+                        )}
+                        {project.currentBlockers && (
+                          <div className="space-y-1 md:col-span-2">
+                            <div className="text-xs font-medium text-muted-foreground">Current Blockers / Support Needed</div>
+                            <div className="text-sm whitespace-pre-wrap">{project.currentBlockers}</div>
+                          </div>
+                        )}
+                        {project.nextSteps && (
+                          <div className="space-y-1 md:col-span-2">
+                            <div className="text-xs font-medium text-muted-foreground">Next Steps</div>
+                            <div className="text-sm whitespace-pre-wrap">{project.nextSteps}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CollapsibleContent>
             </Collapsible>

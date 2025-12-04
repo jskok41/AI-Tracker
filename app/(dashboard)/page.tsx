@@ -99,6 +99,16 @@ async function getDashboardData() {
         latestROI: roiPercentage,
         activeKPIs: project._count.kpiDefinitions,
         openRisks: project._count.riskAssessments,
+        // Key Highlight Remarks
+        team: project.team,
+        ownerContact: project.ownerContact,
+        problemStatement: project.problemStatement,
+        aiMlApproach: project.aiMlApproach,
+        deploymentEnvironment: project.deploymentEnvironment,
+        benefitRealized: project.benefitRealized,
+        validationMethod: project.validationMethod,
+        currentBlockers: project.currentBlockers,
+        nextSteps: project.nextSteps,
       };
     })
     .sort((a, b) => {
