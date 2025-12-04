@@ -120,13 +120,33 @@ export function NewProjectDialog({ departments, users }: NewProjectDialogProps) 
         setNewCategoryName('');
         router.refresh();
       } else {
+        // Keep dialog open and preserve all form values on error
         toast.error(result.error || 'Failed to create project');
+        // Form values are automatically retained since we're using uncontrolled inputs
       }
     });
   };
 
+  const handleOpenChange = (newOpen: boolean) => {
+    // Only allow closing if not submitting and no error occurred
+    if (!newOpen && !isPending) {
+      // Reset form when manually closing
+      setFormData({
+        category: 'AI_INITIATIVE',
+        status: 'PLANNING',
+        departmentId: '',
+        ownerId: '',
+      });
+      setShowNewDepartment(false);
+      setShowNewCategory(false);
+      setNewDepartmentName('');
+      setNewCategoryName('');
+    }
+    setOpen(newOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
