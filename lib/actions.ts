@@ -14,8 +14,8 @@ const projectSchema = z.object({
   departmentId: z.string(),
   ownerId: z.string(),
   budgetAllocated: z.number().min(0).optional(),
-  startDate: z.date().nullable(),
-  targetCompletionDate: z.date().nullable(),
+  startDate: z.date().nullable().optional(),
+  targetCompletionDate: z.date().nullable().optional(),
   // Key Highlight Remarks
   team: z.string().optional(),
   ownerContact: z.string().optional(),
@@ -81,7 +81,7 @@ export async function createProject(formData: FormData) {
       data: {
         ...validated,
         budgetSpent: 0,
-        startDate: new Date(),
+        startDate: validated.startDate || new Date(),
       },
     });
 
