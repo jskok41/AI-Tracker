@@ -1,5 +1,5 @@
 import { MetricCard } from '@/components/dashboard/metric-card';
-import { ProjectCard } from '@/components/dashboard/project-card';
+import { ExpandableProjectList } from '@/components/dashboard/expandable-project-list';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatRelativeTime } from '@/lib/utils';
 import { DollarSign, TrendingUp, AlertTriangle, FolderKanban, Target, Users } from 'lucide-react';
@@ -76,9 +76,8 @@ async function getDashboardData() {
     include: { project: true },
   });
 
-  // Get top projects for showcase
-  const topProjects = projects
-    .slice(0, 4)
+  // Get all projects with calculated metrics
+  const allProjects = projects
     .map(project => {
       const latestROI = project.roiCalculations[0];
       const roiPercentage = latestROI ? (
@@ -88,11 +87,33 @@ async function getDashboardData() {
       ) * 100 : null;
 
       return {
-        ...project,
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        category: project.category,
+        status: project.status,
+        budgetAllocated: project.budgetAllocated,
+        budgetSpent: project.budgetSpent,
+        startDate: project.startDate,
+        targetCompletionDate: project.targetCompletionDate,
         latestROI: roiPercentage,
         activeKPIs: project._count.kpiDefinitions,
         openRisks: project._count.riskAssessments,
       };
+    })
+    .sort((a, b) => {
+      // Sort by status priority, then by name
+      const statusOrder: Record<string, number> = {
+        'PRODUCTION': 1,
+        'SCALING': 2,
+        'PILOT': 3,
+        'PLANNING': 4,
+        'PAUSED': 5,
+        'COMPLETED': 6,
+        'CANCELLED': 7,
+      };
+      const statusDiff = (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
+      return statusDiff !== 0 ? statusDiff : a.name.localeCompare(b.name);
     });
 
   return {
@@ -104,7 +125,7 @@ async function getDashboardData() {
     projectsByStatus,
     projectsByCategory,
     recentAlerts,
-    topProjects,
+    allProjects,
   };
 }
 
@@ -190,29 +211,23 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {/* Featured Projects */}
+      {/* Projects List */}
       <div>
         <div className="mb-4">
-          <h2 className="text-2xl font-bold">Featured Projects</h2>
-          <p className="text-sm text-muted-foreground">Key AI initiatives and their current status</p>
+          <h2 className="text-2xl font-bold">All Projects</h2>
+          <p className="text-sm text-muted-foreground">
+            Expand any project to view detailed metrics and progress
+          </p>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {data.topProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              id={project.id}
-              name={project.name}
-              description={project.description}
-              category={project.category}
-              status={project.status}
-              budgetAllocated={project.budgetAllocated}
-              budgetSpent={project.budgetSpent}
-              latestROI={project.latestROI}
-              activeKPIs={project.activeKPIs}
-              openRisks={project.openRisks}
-            />
-          ))}
-        </div>
+        {data.allProjects.length > 0 ? (
+          <ExpandableProjectList projects={data.allProjects} />
+        ) : (
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <p className="text-muted-foreground">No projects found. Create your first project to get started.</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Recent Activity */}
