@@ -348,16 +348,27 @@ export function NewProjectDialog({ departments, users }: NewProjectDialogProps) 
               </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="budgetAllocated">Budget Allocated (optional)</Label>
-              <Input
-                id="budgetAllocated"
-                name="budgetAllocated"
-                type="number"
-                placeholder="0.00"
-                step="0.01"
-                min="0"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="budgetAllocated">Budget Allocated (optional)</Label>
+                <Input
+                  id="budgetAllocated"
+                  name="budgetAllocated"
+                  type="number"
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="targetCompletionDate">Completion Date (optional)</Label>
+                <Input
+                  id="targetCompletionDate"
+                  name="targetCompletionDate"
+                  type="date"
+                />
+              </div>
             </div>
 
             {/* Key Highlight Remarks Section */}

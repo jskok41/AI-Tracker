@@ -295,66 +295,140 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                     </div>
                   </div>
 
-                  {/* Key Highlight Remarks */}
+                  {/* Key Highlight Remarks with Color Capsules */}
                   {(project.team || project.ownerContact || project.problemStatement || 
                     project.aiMlApproach || project.deploymentEnvironment || 
                     project.benefitRealized || project.validationMethod || 
                     project.currentBlockers || project.nextSteps) && (
                     <div className="mt-6 pt-6 border-t">
                       <h4 className="text-sm font-semibold text-muted-foreground mb-4">Key Highlight Remarks</h4>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {project.team && (
+                          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300">
+                            Department & Team
+                          </Badge>
+                        )}
+                        {project.ownerContact && (
+                          <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-300">
+                            Owner Contact
+                          </Badge>
+                        )}
+                        {project.problemStatement && (
+                          <Badge className="bg-red-100 text-red-800 hover:bg-red-200 border-red-300">
+                            Problem Statement
+                          </Badge>
+                        )}
+                        {project.aiMlApproach && (
+                          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-green-300">
+                            AI/ML Approach
+                          </Badge>
+                        )}
+                        {project.deploymentEnvironment && (
+                          <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-300">
+                            Deployment & Environment
+                          </Badge>
+                        )}
+                        {project.benefitRealized && (
+                          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border-emerald-300">
+                            Benefit Realized
+                          </Badge>
+                        )}
+                        {project.validationMethod && (
+                          <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200 border-indigo-300">
+                            Validation Method
+                          </Badge>
+                        )}
+                        {project.currentBlockers && (
+                          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300">
+                            Blockers / Support
+                          </Badge>
+                        )}
+                        {project.nextSteps && (
+                          <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 border-teal-300">
+                            Next Steps
+                          </Badge>
+                        )}
+                      </div>
                       <div className="grid gap-4 md:grid-cols-2">
                         {project.team && (
                           <div className="space-y-1">
-                            <div className="text-xs font-medium text-muted-foreground">Department & Team</div>
-                            <div className="text-sm">{project.team}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-blue-500" />
+                              <div className="text-xs font-medium text-muted-foreground">Department & Team</div>
+                            </div>
+                            <div className="text-sm pl-4">{project.team}</div>
                           </div>
                         )}
                         {project.ownerContact && (
                           <div className="space-y-1">
-                            <div className="text-xs font-medium text-muted-foreground">Owner Contact</div>
-                            <div className="text-sm">{project.ownerContact}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-purple-500" />
+                              <div className="text-xs font-medium text-muted-foreground">Owner Contact</div>
+                            </div>
+                            <div className="text-sm pl-4">{project.ownerContact}</div>
                           </div>
                         )}
                         {project.problemStatement && (
                           <div className="space-y-1 md:col-span-2">
-                            <div className="text-xs font-medium text-muted-foreground">Problem Statement</div>
-                            <div className="text-sm whitespace-pre-wrap">{project.problemStatement}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-red-500" />
+                              <div className="text-xs font-medium text-muted-foreground">Problem Statement</div>
+                            </div>
+                            <div className="text-sm whitespace-pre-wrap pl-4">{project.problemStatement}</div>
                           </div>
                         )}
                         {project.aiMlApproach && (
                           <div className="space-y-1 md:col-span-2">
-                            <div className="text-xs font-medium text-muted-foreground">AI/ML Approach</div>
-                            <div className="text-sm whitespace-pre-wrap">{project.aiMlApproach}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-green-500" />
+                              <div className="text-xs font-medium text-muted-foreground">AI/ML Approach</div>
+                            </div>
+                            <div className="text-sm whitespace-pre-wrap pl-4">{project.aiMlApproach}</div>
                           </div>
                         )}
                         {project.deploymentEnvironment && (
                           <div className="space-y-1 md:col-span-2">
-                            <div className="text-xs font-medium text-muted-foreground">Deployment Status & Environment</div>
-                            <div className="text-sm whitespace-pre-wrap">{project.deploymentEnvironment}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-orange-500" />
+                              <div className="text-xs font-medium text-muted-foreground">Deployment Status & Environment</div>
+                            </div>
+                            <div className="text-sm whitespace-pre-wrap pl-4">{project.deploymentEnvironment}</div>
                           </div>
                         )}
                         {project.benefitRealized && (
                           <div className="space-y-1 md:col-span-2">
-                            <div className="text-xs font-medium text-muted-foreground">Benefit Realized</div>
-                            <div className="text-sm whitespace-pre-wrap">{project.benefitRealized}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                              <div className="text-xs font-medium text-muted-foreground">Benefit Realized</div>
+                            </div>
+                            <div className="text-sm whitespace-pre-wrap pl-4">{project.benefitRealized}</div>
                           </div>
                         )}
                         {project.validationMethod && (
                           <div className="space-y-1 md:col-span-2">
-                            <div className="text-xs font-medium text-muted-foreground">Validation Method</div>
-                            <div className="text-sm whitespace-pre-wrap">{project.validationMethod}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-indigo-500" />
+                              <div className="text-xs font-medium text-muted-foreground">Validation Method</div>
+                            </div>
+                            <div className="text-sm whitespace-pre-wrap pl-4">{project.validationMethod}</div>
                           </div>
                         )}
                         {project.currentBlockers && (
                           <div className="space-y-1 md:col-span-2">
-                            <div className="text-xs font-medium text-muted-foreground">Current Blockers / Support Needed</div>
-                            <div className="text-sm whitespace-pre-wrap">{project.currentBlockers}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                              <div className="text-xs font-medium text-muted-foreground">Current Blockers / Support Needed</div>
+                            </div>
+                            <div className="text-sm whitespace-pre-wrap pl-4">{project.currentBlockers}</div>
                           </div>
                         )}
                         {project.nextSteps && (
                           <div className="space-y-1 md:col-span-2">
-                            <div className="text-xs font-medium text-muted-foreground">Next Steps</div>
-                            <div className="text-sm whitespace-pre-wrap">{project.nextSteps}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-teal-500" />
+                              <div className="text-xs font-medium text-muted-foreground">Next Steps</div>
+                            </div>
+                            <div className="text-sm whitespace-pre-wrap pl-4">{project.nextSteps}</div>
                           </div>
                         )}
                       </div>
