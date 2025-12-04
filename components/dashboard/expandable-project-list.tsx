@@ -122,7 +122,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
 
                   {/* Project Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-1">
+                    <div className="flex items-center gap-3 mb-1 flex-wrap">
                       <h3 className="font-semibold text-lg truncate">{project.name}</h3>
                       <StatusBadge status={project.status} />
                       <Badge 
@@ -131,6 +131,15 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                       >
                         {formatCategoryName(project.category)}
                       </Badge>
+                      {/* Department & Team Capsule - Outside Bar UI */}
+                      {project.team && (
+                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300 text-xs">
+                          <div className="flex items-center gap-1.5">
+                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                            {project.team}
+                          </div>
+                        </Badge>
+                      )}
                     </div>
                     {project.description && (
                       <p className="text-sm text-muted-foreground line-clamp-1">
