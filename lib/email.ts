@@ -96,9 +96,21 @@ export async function sendPasswordResetEmail(email: string, token: string) {
 }
 
 export async function sendWelcomeEmail(email: string, name: string) {
+  const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER || 'noreply@example.com';
+  const loginUrl = `${process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000'}/auth/login`;
+  
+  const transporter = getEmailTransporter();
+  
+  if (!transporter) {
+    console.error('Email transporter not configured. Please set EMAIL_SERVER_HOST, EMAIL_SERVER_PORT, EMAIL_SERVER_USER, and EMAIL_SERVER_PASSWORD environment variables.');
+    throw new Error('Email service is not configured. Please contact support.');
+  }
+
   try {
+    await transporter.verify();
+    
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
+      from: emailFrom,
       to: email,
       subject: 'Welcome to AI Benefits Tracker',
       html: `
@@ -116,7 +128,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               <h2>Welcome to AI Benefits Tracker, ${name}!</h2>
               <p>Your account has been successfully created.</p>
               <p>You can now start tracking AI benefits across your organization.</p>
-              <a href="${process.env.NEXTAUTH_URL}/auth/login" class="button">Go to Login</a>
+              <a href="${loginUrl}" class="button">Go to Login</a>
             </div>
           </body>
         </html>
@@ -124,9 +136,9 @@ export async function sendWelcomeEmail(email: string, name: string) {
     });
 
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to send welcome email:', error);
-    return { success: false, error: 'Failed to send email' };
+    throw new Error(`Failed to send email: ${error.message || 'Unknown error'}`);
   }
 }
 
