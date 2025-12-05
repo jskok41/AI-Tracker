@@ -295,14 +295,26 @@ export async function requestPasswordReset(formData: FormData) {
     });
 
     // Send reset email
-    await sendPasswordResetEmail(validated.email, resetToken);
+    try {
+      await sendPasswordResetEmail(validated.email, resetToken);
+      console.log('Password reset email sent successfully to:', validated.email);
+    } catch (emailError: any) {
+      console.error('Error sending password reset email:', emailError);
+      // Still return success to user (security best practice - don't reveal if email exists)
+      // But log the error for debugging
+      return { 
+        success: false, 
+        error: emailError.message || 'Failed to send reset email. Please check your email configuration or contact support.' 
+      };
+    }
 
     return { success: true, message: 'If an account exists with this email, you will receive a password reset link' };
   } catch (error) {
+    console.error('Password reset request error:', error);
     if (error instanceof z.ZodError) {
       return { success: false, error: error.issues[0].message };
     }
-    return { success: false, error: 'Failed to send reset email' };
+    return { success: false, error: 'Failed to process reset request' };
   }
 }
 

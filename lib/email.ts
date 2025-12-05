@@ -1,21 +1,50 @@
 import nodemailer from 'nodemailer';
 
-// Create reusable transporter
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_SERVER_HOST,
-  port: parseInt(process.env.EMAIL_SERVER_PORT || '587'),
-  auth: {
-    user: process.env.EMAIL_SERVER_USER,
-    pass: process.env.EMAIL_SERVER_PASSWORD,
-  },
-});
+// Check if email configuration is available
+function getEmailTransporter() {
+  const host = process.env.EMAIL_SERVER_HOST;
+  const port = process.env.EMAIL_SERVER_PORT;
+  const user = process.env.EMAIL_SERVER_USER;
+  const pass = process.env.EMAIL_SERVER_PASSWORD;
+
+  if (!host || !port || !user || !pass) {
+    console.error('Email configuration missing:', {
+      hasHost: !!host,
+      hasPort: !!port,
+      hasUser: !!user,
+      hasPass: !!pass,
+    });
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host,
+    port: parseInt(port),
+    secure: port === '465', // true for 465, false for other ports
+    auth: {
+      user,
+      pass,
+    },
+  });
+}
 
 export async function sendPasswordResetEmail(email: string, token: string) {
-  const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
+  const resetUrl = `${process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000'}/auth/reset-password?token=${token}`;
+  const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER || 'noreply@example.com';
+
+  const transporter = getEmailTransporter();
+  
+  if (!transporter) {
+    console.error('Email transporter not configured. Please set EMAIL_SERVER_HOST, EMAIL_SERVER_PORT, EMAIL_SERVER_USER, and EMAIL_SERVER_PASSWORD environment variables.');
+    throw new Error('Email service is not configured. Please contact support.');
+  }
 
   try {
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
+    // Verify transporter configuration
+    await transporter.verify();
+    
+    const info = await transporter.sendMail({
+      from: emailFrom,
       to: email,
       subject: 'Reset Your Password - AI Benefits Tracker',
       html: `
@@ -46,12 +75,23 @@ export async function sendPasswordResetEmail(email: string, token: string) {
           </body>
         </html>
       `,
+      text: `Reset Your Password\n\nYou requested to reset your password for AI Benefits Tracker.\n\nClick this link to reset your password: ${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.`,
+    });
+
+    console.log('Password reset email sent successfully:', {
+      messageId: info.messageId,
+      to: email,
     });
 
     return { success: true };
-  } catch (error) {
-    console.error('Failed to send email:', error);
-    return { success: false, error: 'Failed to send email' };
+  } catch (error: any) {
+    console.error('Failed to send password reset email:', {
+      error: error.message,
+      code: error.code,
+      response: error.response,
+      to: email,
+    });
+    throw new Error(`Failed to send email: ${error.message || 'Unknown error'}`);
   }
 }
 
