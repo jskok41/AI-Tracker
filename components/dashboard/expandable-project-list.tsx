@@ -33,6 +33,7 @@ interface Project {
   openRisks?: number;
   startDate?: Date | null;
   targetCompletionDate?: Date | null;
+  department?: { id: string; name: string } | null;
   // Key Highlight Remarks
   team?: string | null;
   ownerContact?: string | null;
@@ -131,11 +132,20 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                       >
                         {formatCategoryName(project.category)}
                       </Badge>
-                      {/* Department & Team Capsule - Outside Bar UI */}
-                      {project.team && (
+                      {/* Department Capsule */}
+                      {project.department && (
                         <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300 text-xs">
                           <div className="flex items-center gap-1.5">
                             <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                            {project.department.name}
+                          </div>
+                        </Badge>
+                      )}
+                      {/* Team Capsule - Outside Bar UI */}
+                      {project.team && (
+                        <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-300 text-xs">
+                          <div className="flex items-center gap-1.5">
+                            <div className="h-1.5 w-1.5 rounded-full bg-gray-500" />
                             {project.team}
                           </div>
                         </Badge>

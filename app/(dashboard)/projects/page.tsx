@@ -6,7 +6,7 @@ import prisma from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-async function getProjects(category?: string | null, departmentId?: string | null) {
+async function getProjects(category?: string | null, departmentIds?: string | string[] | null) {
   const where: any = {};
   
   if (category) {
@@ -28,13 +28,25 @@ async function getProjects(category?: string | null, departmentId?: string | nul
     }
   }
   
-  if (departmentId) {
-    where.departmentId = departmentId;
+  // Handle multiple department IDs
+  if (departmentIds) {
+    const ids = Array.isArray(departmentIds) ? departmentIds : [departmentIds];
+    if (ids.length > 0) {
+      where.departmentId = {
+        in: ids,
+      };
+    }
   }
 
   const projects = await prisma.aIProject.findMany({
     where,
     include: {
+      department: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       _count: {
         select: {
           kpiDefinitions: true,
@@ -71,11 +83,16 @@ async function getProjects(category?: string | null, departmentId?: string | nul
 export default async function ProjectsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; departmentId?: string }>;
+  searchParams: Promise<{ category?: string; departmentId?: string | string[] }>;
 }) {
   const params = await searchParams;
+  // Handle multiple departmentId params (URL can have ?departmentId=id1&departmentId=id2)
+  const departmentIds = params.departmentId 
+    ? (Array.isArray(params.departmentId) ? params.departmentId : [params.departmentId])
+    : undefined;
+  
   const [projects, departments, users] = await Promise.all([
-    getProjects(params.category, params.departmentId),
+    getProjects(params.category, departmentIds),
     prisma.department.findMany({ orderBy: { name: 'asc' } }),
     prisma.user.findMany({ 
       select: { id: true, name: true, email: true },

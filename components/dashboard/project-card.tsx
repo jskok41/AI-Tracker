@@ -18,6 +18,7 @@ interface ProjectCardProps {
   latestROI?: number | null;
   activeKPIs?: number;
   openRisks?: number;
+  department?: { id: string; name: string } | null;
 }
 
 export function ProjectCard({
@@ -31,6 +32,7 @@ export function ProjectCard({
   latestROI,
   activeKPIs = 0,
   openRisks = 0,
+  department,
 }: ProjectCardProps) {
   const budgetProgress = budgetAllocated && budgetSpent
     ? (budgetSpent / budgetAllocated) * 100
@@ -51,11 +53,19 @@ export function ProjectCard({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Category Badge */}
-          <div>
+          {/* Category and Department Badges */}
+          <div className="flex items-center gap-2 flex-wrap">
             <Badge variant="outline" className="text-xs">
               {category.replace(/_/g, ' ')}
             </Badge>
+            {department && (
+              <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300 text-xs">
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                  {department.name}
+                </div>
+              </Badge>
+            )}
           </div>
 
           {/* Metrics */}

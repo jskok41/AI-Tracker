@@ -86,7 +86,7 @@ export async function createProject(formData: FormData) {
     });
 
     revalidatePath('/projects');
-    return { success: true, data: project };
+    return { success: true, data: project, projectId: project.id };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return { success: false, error: error.issues[0].message };

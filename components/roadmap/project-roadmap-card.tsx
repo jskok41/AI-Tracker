@@ -9,7 +9,8 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { StatusBadge } from '@/components/dashboard/status-badge';
 import { formatDate } from '@/lib/utils';
-import { ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
+import { ChevronDown, ChevronRight, ExternalLink, Map } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import type { Phase, Milestone } from '@prisma/client';
 
 interface PhaseWithMilestones extends Phase {
@@ -23,6 +24,7 @@ interface ProjectRoadmapCardProps {
     status: string;
     startDate: Date | null;
     targetCompletionDate: Date | null;
+    department?: { id: string; name: string } | null;
     phases: PhaseWithMilestones[];
   };
   defaultOpen?: boolean;
@@ -62,9 +64,17 @@ export function ProjectRoadmapCard({ project, defaultOpen = false }: ProjectRoad
                   )}
                 </div>
                 <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <CardTitle className="text-lg">{project.name}</CardTitle>
                     <StatusBadge status={project.status as any} />
+                    {project.department && (
+                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                          {project.department.name}
+                        </div>
+                      </Badge>
+                    )}
                     <Link 
                       href={`/projects/${project.id}`}
                       onClick={(e) => e.stopPropagation()}
@@ -217,10 +227,22 @@ export function ProjectRoadmapCard({ project, defaultOpen = false }: ProjectRoad
               </Card>
             ) : (
               <Card>
-                <CardContent className="pt-6 text-center">
-                  <p className="text-sm text-muted-foreground">
+                <CardHeader>
+                  <CardTitle className="text-base">Implementation Timeline</CardTitle>
+                  <CardDescription>
                     No phases defined for this project yet.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center py-8">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Add phases to track your project's implementation progress.
                   </p>
+                  <Link href={`/projects/${project.id}`}>
+                    <Button variant="outline" size="sm">
+                      <Map className="mr-2 h-4 w-4" />
+                      Go to Project to Add Phases
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             )}

@@ -10,10 +10,26 @@ import prisma from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-async function getReportData() {
+async function getReportData(departmentIds?: string[]) {
+  const where: any = {};
+  
+  // Filter by departments if provided
+  if (departmentIds && departmentIds.length > 0) {
+    where.departmentId = {
+      in: departmentIds,
+    };
+  }
+
   // Get all projects with their data
   const projects = await prisma.aIProject.findMany({
+    where,
     include: {
+      department: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       roiCalculations: {
         orderBy: { calculationDate: 'desc' },
         take: 1,
@@ -61,8 +77,18 @@ async function getReportData() {
   };
 }
 
-export default async function ReportsPage() {
-  const data = await getReportData();
+export default async function ReportsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ departmentId?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  // Handle multiple departmentId params
+  const departmentIds = params.departmentId 
+    ? (Array.isArray(params.departmentId) ? params.departmentId : [params.departmentId])
+    : undefined;
+  
+  const data = await getReportData(departmentIds);
 
   return (
     <div className="flex flex-col gap-6">

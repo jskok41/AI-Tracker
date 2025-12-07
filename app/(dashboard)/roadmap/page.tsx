@@ -8,19 +8,30 @@ import { FolderKanban } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
-async function getAllProjectsWithRoadmaps() {
+async function getAllProjectsWithRoadmaps(departmentIds?: string[]) {
+  const where: any = {};
+  
+  // Filter by departments if provided
+  if (departmentIds && departmentIds.length > 0) {
+    where.departmentId = {
+      in: departmentIds,
+    };
+  }
+
   return await prisma.aIProject.findMany({
-    where: {
-      phases: {
-        some: {},
-      },
-    },
+    where,
     select: {
       id: true,
       name: true,
       status: true,
       startDate: true,
       targetCompletionDate: true,
+      department: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       phases: {
         orderBy: { phaseOrder: 'asc' },
         include: {
@@ -36,8 +47,18 @@ async function getAllProjectsWithRoadmaps() {
   });
 }
 
-export default async function RoadmapPage() {
-  const projects = await getAllProjectsWithRoadmaps();
+export default async function RoadmapPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ departmentId?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  // Handle multiple departmentId params
+  const departmentIds = params.departmentId 
+    ? (Array.isArray(params.departmentId) ? params.departmentId : [params.departmentId])
+    : undefined;
+  
+  const projects = await getAllProjectsWithRoadmaps(departmentIds);
 
   // Calculate overall statistics across all projects
   const totalProjects = projects.length;
@@ -139,7 +160,7 @@ export default async function RoadmapPage() {
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-muted-foreground">
-              No projects with roadmap data found. Create phases and milestones for your projects to view them here.
+              No projects found. Create a project to start tracking your roadmap.
             </p>
           </CardContent>
         </Card>

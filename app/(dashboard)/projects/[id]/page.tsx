@@ -129,14 +129,12 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               <span className="font-medium">{formatDate(project.startDate)}</span>
             </div>
           )}
-          {project.phases.length > 0 && (
-            <Link href={`/roadmap?projectId=${project.id}`}>
-              <Button variant="outline" size="sm">
-                <Map className="h-4 w-4 mr-2" />
-                View Roadmap
-              </Button>
-            </Link>
-          )}
+          <Link href={`/roadmap?projectId=${project.id}`}>
+            <Button variant="outline" size="sm">
+              <Map className="h-4 w-4 mr-2" />
+              View Roadmap
+            </Button>
+          </Link>
         </div>
       </div>
 

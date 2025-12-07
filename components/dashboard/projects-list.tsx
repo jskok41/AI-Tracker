@@ -31,6 +31,7 @@ export function ProjectsList({ projects, departments, users }: ProjectsListProps
               latestROI={project.latestROI}
               activeKPIs={project.activeKPIs}
               openRisks={project.openRisks}
+              department={project.department}
             />
             <Button
               size="sm"

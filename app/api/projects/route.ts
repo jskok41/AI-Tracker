@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const category = searchParams.get('category');
-    const departmentId = searchParams.get('departmentId');
+    const departmentIds = searchParams.getAll('departmentId');
     const search = searchParams.get('search');
 
     const where: any = {};
@@ -20,8 +20,11 @@ export async function GET(request: NextRequest) {
       where.category = category;
     }
 
-    if (departmentId) {
-      where.departmentId = departmentId;
+    // Handle multiple department IDs
+    if (departmentIds.length > 0) {
+      where.departmentId = {
+        in: departmentIds,
+      };
     }
 
     if (search) {

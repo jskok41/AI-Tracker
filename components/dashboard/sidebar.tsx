@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -15,6 +15,7 @@ import {
   Building2,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -43,31 +44,78 @@ function SidebarContent({ departments, categories }: SidebarProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  // Get selected departments from URL params
+  const getSelectedDepartments = (): string[] => {
+    const departmentIds = searchParams.getAll('departmentId');
+    return departmentIds.length > 0 ? departmentIds : [];
+  };
+
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>(() => {
+    const deptIds = getSelectedDepartments();
+    // If no departments selected, default to "All" (empty array means all)
+    return deptIds.length > 0 ? deptIds : [];
+  });
+
+  // Update selected departments when URL changes
+  useEffect(() => {
+    const deptIds = getSelectedDepartments();
+    setSelectedDepartments(deptIds.length > 0 ? deptIds : []);
+  }, [searchParams]);
+
   const handleCategoryClick = (category: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (searchParams.get('category') === category) {
       params.delete('category');
     } else {
       params.set('category', category);
-      params.delete('departmentId'); // Clear department filter when selecting category
+      // Keep department filters when selecting category
     }
-    router.push(`/projects?${params.toString()}`);
+    // Navigate to current page with updated params
+    router.push(`${pathname}?${params.toString()}`);
   };
 
-  const handleDepartmentClick = (departmentId: string) => {
+  const handleDepartmentToggle = (departmentId: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (searchParams.get('departmentId') === departmentId) {
-      params.delete('departmentId');
+    const currentSelected = getSelectedDepartments();
+    
+    let newSelected: string[];
+    if (currentSelected.includes(departmentId)) {
+      // Remove department
+      newSelected = currentSelected.filter(id => id !== departmentId);
     } else {
-      params.set('departmentId', departmentId);
-      params.delete('category'); // Clear category filter when selecting department
+      // Add department
+      newSelected = [...currentSelected, departmentId];
     }
-    router.push(`/projects?${params.toString()}`);
+
+    // Update URL params
+    params.delete('departmentId');
+    if (newSelected.length > 0) {
+      newSelected.forEach(id => params.append('departmentId', id));
+    }
+    
+    // Keep category filter when selecting departments (allow combined filtering)
+    
+    setSelectedDepartments(newSelected);
+    // Navigate to current page with updated params
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleAllDepartmentsClick = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('departmentId');
+    // Keep category filter when selecting "All" departments
+    setSelectedDepartments([]);
+    // Navigate to current page with updated params
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const clearFilters = () => {
-    router.push('/projects');
+    // Navigate to current page without filters
+    router.push(pathname);
+    setSelectedDepartments([]);
   };
+
+  const isAllSelected = selectedDepartments.length === 0;
 
   const getCategoryLabel = (category: string): string => {
     return CATEGORY_LABELS[category] || category;
@@ -112,7 +160,7 @@ function SidebarContent({ departments, categories }: SidebarProps) {
                 <Tag className="h-4 w-4" />
                 Categories
               </div>
-              {(searchParams.get('category') || searchParams.get('departmentId')) && (
+              {(searchParams.get('category') || selectedDepartments.length > 0) && (
                 <button
                   onClick={clearFilters}
                   className="text-xs text-primary hover:underline"
@@ -145,24 +193,72 @@ function SidebarContent({ departments, categories }: SidebarProps) {
         {/* Departments Section */}
         {departments.length > 0 && (
           <div className="mt-6 space-y-2">
-            <div className="flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              <Building2 className="h-4 w-4" />
-              Departments
+            <div className="flex items-center justify-between px-3 py-2">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <Building2 className="h-4 w-4" />
+                Departments
+              </div>
+              {(selectedDepartments.length > 0 || searchParams.get('category')) && (
+                <button
+                  onClick={clearFilters}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Clear
+                </button>
+              )}
             </div>
+            
+            {/* All Departments Option */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                handleAllDepartmentsClick();
+              }}
+              className={cn(
+                'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors',
+                isAllSelected
+                  ? 'bg-primary/10 text-primary font-medium'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
+            >
+              <Checkbox
+                checked={isAllSelected}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    handleAllDepartmentsClick();
+                  }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="h-4 w-4"
+              />
+              <span>All</span>
+            </button>
+
+            {/* Individual Departments */}
             {departments.map((department) => {
-              const isActive = searchParams.get('departmentId') === department.id;
+              const isSelected = selectedDepartments.includes(department.id);
               return (
                 <button
                   key={department.id}
-                  onClick={() => handleDepartmentClick(department.id)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDepartmentToggle(department.id);
+                  }}
                   className={cn(
                     'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors',
-                    isActive
+                    isSelected
                       ? 'bg-primary/10 text-primary font-medium'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                   )}
                 >
-                  <span className="h-2 w-2 rounded-full bg-current opacity-60" />
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={(checked) => {
+                      handleDepartmentToggle(department.id);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-4 w-4"
+                  />
                   {department.name}
                 </button>
               );

@@ -1,11 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { StatusBadge } from '@/components/dashboard/status-badge';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { formatDate, getDaysUntil, isOverdue } from '@/lib/utils';
-import { CheckCircle2, Circle, Clock, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, AlertCircle, Edit } from 'lucide-react';
+import { EditPhaseDialog } from '@/components/dashboard/edit-phase-dialog';
 import type { Phase, Milestone, PhaseStatus } from '@prisma/client';
 
 interface PhaseWithMilestones extends Phase {
@@ -20,6 +23,7 @@ interface TimelineProps {
 }
 
 export function Timeline({ phases, currentPhaseId, projectStartDate, projectTargetCompletionDate }: TimelineProps) {
+  const [editingPhase, setEditingPhase] = useState<string | null>(null);
   const getPhaseIcon = (status: PhaseStatus) => {
     switch (status) {
       case 'COMPLETED':
@@ -113,7 +117,16 @@ export function Timeline({ phases, currentPhaseId, projectStartDate, projectTarg
                       <p className="text-sm text-muted-foreground">{phase.description}</p>
                     )}
                   </div>
-                  <StatusBadge status={phase.status} />
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status={phase.status} />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setEditingPhase(phase.id)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Phase Dates */}
@@ -196,6 +209,18 @@ export function Timeline({ phases, currentPhaseId, projectStartDate, projectTarg
                 )}
               </CardContent>
             </Card>
+            {editingPhase === phase.id && (
+              <EditPhaseDialog
+                phase={{
+                  id: phase.id,
+                  phaseName: phase.phaseName,
+                  status: phase.status,
+                  progressPercentage: phase.progressPercentage,
+                }}
+                open={editingPhase === phase.id}
+                onOpenChange={(open) => !open && setEditingPhase(null)}
+              />
+            )}
           </div>
         );
       })}

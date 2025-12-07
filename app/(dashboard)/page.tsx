@@ -7,10 +7,26 @@ import prisma from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-async function getDashboardData() {
+async function getDashboardData(departmentIds?: string[]) {
+  const where: any = {};
+  
+  // Filter by departments if provided
+  if (departmentIds && departmentIds.length > 0) {
+    where.departmentId = {
+      in: departmentIds,
+    };
+  }
+
   // Get all projects
   const projects = await prisma.aIProject.findMany({
+    where,
     include: {
+      department: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       _count: {
         select: {
           kpiDefinitions: true,
@@ -49,28 +65,50 @@ async function getDashboardData() {
     return sum;
   }, 0);
 
-  // Get critical risks
+  // Get critical risks (filtered by selected departments if applicable)
+  const criticalRisksWhere: any = {
+    severity: 'CRITICAL',
+    status: 'OPEN',
+  };
+  
+  if (departmentIds && departmentIds.length > 0) {
+    criticalRisksWhere.project = {
+      departmentId: {
+        in: departmentIds,
+      },
+    };
+  }
+  
   const criticalRisks = await prisma.riskAssessment.count({
-    where: {
-      severity: 'CRITICAL',
-      status: 'OPEN',
-    },
+    where: criticalRisksWhere,
   });
 
   // Get projects by status
   const projectsByStatus = await prisma.aIProject.groupBy({
+    where,
     by: ['status'],
     _count: true,
   });
 
   // Get projects by category
   const projectsByCategory = await prisma.aIProject.groupBy({
+    where,
     by: ['category'],
     _count: true,
   });
 
-  // Get recent alerts
+  // Get recent alerts (filtered by selected departments if applicable)
+  const alertsWhere: any = {};
+  if (departmentIds && departmentIds.length > 0) {
+    alertsWhere.project = {
+      departmentId: {
+        in: departmentIds,
+      },
+    };
+  }
+  
   const recentAlerts = await prisma.alert.findMany({
+    where: alertsWhere,
     take: 5,
     orderBy: { triggeredAt: 'desc' },
     include: { project: true },
@@ -99,6 +137,7 @@ async function getDashboardData() {
         latestROI: roiPercentage,
         activeKPIs: project._count.kpiDefinitions,
         openRisks: project._count.riskAssessments,
+        department: project.department,
         // Key Highlight Remarks
         team: project.team,
         ownerContact: project.ownerContact,
@@ -139,8 +178,18 @@ async function getDashboardData() {
   };
 }
 
-export default async function DashboardPage() {
-  const data = await getDashboardData();
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ departmentId?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  // Handle multiple departmentId params
+  const departmentIds = params.departmentId 
+    ? (Array.isArray(params.departmentId) ? params.departmentId : [params.departmentId])
+    : undefined;
+  
+  const data = await getDashboardData(departmentIds);
 
   return (
     <div className="flex flex-col gap-6">

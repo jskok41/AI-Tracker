@@ -10,11 +10,27 @@ import prisma from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-async function getPrompts() {
+async function getPrompts(departmentIds?: string[]) {
+  const where: any = {
+    isActive: true,
+  };
+  
+  // Filter by departments if provided (via associated projects)
+  // Only show prompts that have a project and that project's department is selected
+  if (departmentIds && departmentIds.length > 0) {
+    where.project = {
+      departmentId: {
+        in: departmentIds,
+      },
+    };
+    // Only include prompts that have a project (projectId is not null)
+    where.projectId = {
+      not: null,
+    };
+  }
+
   const prompts = await prisma.promptLibrary.findMany({
-    where: {
-      isActive: true,
-    },
+    where,
     include: {
       author: {
         select: {
@@ -39,34 +55,53 @@ async function getPrompts() {
   }));
 }
 
-async function getPromptStats() {
+async function getPromptStats(departmentIds?: string[]) {
+  const baseWhere: any = { isActive: true };
+  
+  // Filter by departments if provided (via associated projects)
+  if (departmentIds && departmentIds.length > 0) {
+    baseWhere.project = {
+      departmentId: {
+        in: departmentIds,
+      },
+    };
+    // Only include prompts that have a project (projectId is not null)
+    baseWhere.projectId = {
+      not: null,
+    };
+  }
+
   const totalPrompts = await prisma.promptLibrary.count({
-    where: { isActive: true },
+    where: baseWhere,
   });
 
   const totalUsage = await prisma.promptLibrary.aggregate({
-    where: { isActive: true },
+    where: baseWhere,
     _sum: {
       usageCount: true,
     },
   });
 
+  const avgRatingWhere = {
+    ...baseWhere,
+    averageRating: { not: null },
+  };
+
   const avgRating = await prisma.promptLibrary.aggregate({
-    where: { 
-      isActive: true,
-      averageRating: { not: null },
-    },
+    where: avgRatingWhere,
     _avg: {
       averageRating: true,
     },
   });
 
+  const topCategoriesWhere = {
+    ...baseWhere,
+    category: { not: null },
+  };
+
   const topCategories = await prisma.promptLibrary.groupBy({
     by: ['category'],
-    where: { 
-      isActive: true,
-      category: { not: null },
-    },
+    where: topCategoriesWhere,
     _count: true,
     orderBy: {
       _count: {
@@ -84,10 +119,20 @@ async function getPromptStats() {
   };
 }
 
-export default async function PromptsPage() {
+export default async function PromptsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ departmentId?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  // Handle multiple departmentId params
+  const departmentIds = params.departmentId 
+    ? (Array.isArray(params.departmentId) ? params.departmentId : [params.departmentId])
+    : undefined;
+  
   const [prompts, stats, projects, users] = await Promise.all([
-    getPrompts(),
-    getPromptStats(),
+    getPrompts(departmentIds),
+    getPromptStats(departmentIds),
     prisma.aIProject.findMany({
       select: { id: true, name: true },
       orderBy: { name: 'asc' },

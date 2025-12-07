@@ -10,8 +10,20 @@ import prisma from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-async function getRisks() {
+async function getRisks(departmentIds?: string[]) {
+  const where: any = {};
+  
+  // Filter by departments if provided
+  if (departmentIds && departmentIds.length > 0) {
+    where.project = {
+      departmentId: {
+        in: departmentIds,
+      },
+    };
+  }
+
   const risks = await prisma.riskAssessment.findMany({
+    where,
     include: {
       project: {
         select: {
@@ -38,20 +50,34 @@ async function getRisks() {
   }));
 }
 
-async function getRiskStats() {
-  const total = await prisma.riskAssessment.count();
-  const openRisks = await prisma.riskAssessment.count({
-    where: { status: 'OPEN' },
-  });
-  const criticalRisks = await prisma.riskAssessment.count({
-    where: { 
-      severity: 'CRITICAL',
-      status: 'OPEN',
-    },
-  });
-  const mitigated = await prisma.riskAssessment.count({
-    where: { status: 'MITIGATED' },
-  });
+async function getRiskStats(departmentIds?: string[]) {
+  const baseWhere: any = {};
+  const openWhere: any = { status: 'OPEN' };
+  const criticalWhere: any = { 
+    severity: 'CRITICAL',
+    status: 'OPEN',
+  };
+  const mitigatedWhere: any = { status: 'MITIGATED' };
+
+  // Add department filter if provided
+  if (departmentIds && departmentIds.length > 0) {
+    const departmentFilter = {
+      project: {
+        departmentId: {
+          in: departmentIds,
+        },
+      },
+    };
+    baseWhere.project = departmentFilter.project;
+    openWhere.project = departmentFilter.project;
+    criticalWhere.project = departmentFilter.project;
+    mitigatedWhere.project = departmentFilter.project;
+  }
+
+  const total = await prisma.riskAssessment.count({ where: baseWhere });
+  const openRisks = await prisma.riskAssessment.count({ where: openWhere });
+  const criticalRisks = await prisma.riskAssessment.count({ where: criticalWhere });
+  const mitigated = await prisma.riskAssessment.count({ where: mitigatedWhere });
 
   return {
     total,
@@ -61,10 +87,20 @@ async function getRiskStats() {
   };
 }
 
-export default async function RisksPage() {
+export default async function RisksPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ departmentId?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  // Handle multiple departmentId params
+  const departmentIds = params.departmentId 
+    ? (Array.isArray(params.departmentId) ? params.departmentId : [params.departmentId])
+    : undefined;
+  
   const [risks, stats, projects, users] = await Promise.all([
-    getRisks(),
-    getRiskStats(),
+    getRisks(departmentIds),
+    getRiskStats(departmentIds),
     prisma.aIProject.findMany({
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
@@ -156,7 +192,7 @@ export default async function RisksPage() {
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'CRITICAL' && r.likelihood === likelihood).length;
               return (
-                <div key={likelihood} className="h-16 rounded border flex items-center justify-center bg-red-50">
+                <div key={`critical-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-red-50">
                   <span className="text-sm font-bold text-red-600">{count || ''}</span>
                 </div>
               );
@@ -167,7 +203,7 @@ export default async function RisksPage() {
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'HIGH' && r.likelihood === likelihood).length;
               return (
-                <div key={likelihood} className="h-16 rounded border flex items-center justify-center bg-orange-50">
+                <div key={`high-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-orange-50">
                   <span className="text-sm font-bold text-orange-600">{count || ''}</span>
                 </div>
               );
@@ -178,7 +214,7 @@ export default async function RisksPage() {
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'MEDIUM' && r.likelihood === likelihood).length;
               return (
-                <div key={likelihood} className="h-16 rounded border flex items-center justify-center bg-yellow-50">
+                <div key={`medium-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-yellow-50">
                   <span className="text-sm font-bold text-yellow-600">{count || ''}</span>
                 </div>
               );
@@ -189,7 +225,7 @@ export default async function RisksPage() {
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'LOW' && r.likelihood === likelihood).length;
               return (
-                <div key={likelihood} className="h-16 rounded border flex items-center justify-center bg-green-50">
+                <div key={`low-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-green-50">
                   <span className="text-sm font-bold text-green-600">{count || ''}</span>
                 </div>
               );
