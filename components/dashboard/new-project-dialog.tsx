@@ -21,8 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { createProject } from '@/lib/actions';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -57,14 +56,6 @@ export function NewProjectDialog({ departments, users }: NewProjectDialogProps) 
     departmentId: '',
     ownerId: '',
   });
-  const [phases, setPhases] = useState<Array<{
-    phaseName: string;
-    description: string;
-    status: string;
-    progressPercentage: string;
-    startDate: string;
-    targetEndDate: string;
-  }>>([]);
 
   const handleCreateDepartment = async () => {
     if (!newDepartmentName.trim()) {
@@ -99,27 +90,6 @@ export function NewProjectDialog({ departments, users }: NewProjectDialogProps) 
     }
   };
 
-  const addPhase = () => {
-    setPhases([...phases, {
-      phaseName: '',
-      description: '',
-      status: 'NOT_STARTED',
-      progressPercentage: '0',
-      startDate: '',
-      targetEndDate: '',
-    }]);
-  };
-
-  const removePhase = (index: number) => {
-    setPhases(phases.filter((_, i) => i !== index));
-  };
-
-  const updatePhase = (index: number, field: string, value: string) => {
-    const updatedPhases = [...phases];
-    updatedPhases[index] = { ...updatedPhases[index], [field]: value };
-    setPhases(updatedPhases);
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -135,37 +105,7 @@ export function NewProjectDialog({ departments, users }: NewProjectDialogProps) 
     startTransition(async () => {
       const result = await createProject(data);
       if (result.success && result.projectId) {
-        // Create phases if any were added
-        if (phases.length > 0) {
-          try {
-            const phasePromises = phases
-              .filter(p => p.phaseName.trim())
-              .map((phase, index) =>
-                fetch('/api/roadmap', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    type: 'phase',
-                    projectId: result.projectId,
-                    phaseName: phase.phaseName,
-                    description: phase.description || null,
-                    phaseOrder: index,
-                    status: phase.status,
-                    progressPercentage: parseFloat(phase.progressPercentage),
-                    startDate: phase.startDate || null,
-                    targetEndDate: phase.targetEndDate || null,
-                  }),
-                })
-              );
-            
-            await Promise.all(phasePromises);
-            toast.success(`Project created with ${phases.filter(p => p.phaseName.trim()).length} phase(s)!`);
-          } catch (error) {
-            toast.success('Project created, but some phases failed to add');
-          }
-        } else {
-          toast.success('Project created successfully!');
-        }
+        toast.success('Project created successfully!');
         
         setOpen(false);
         form.reset();
@@ -175,7 +115,6 @@ export function NewProjectDialog({ departments, users }: NewProjectDialogProps) 
           departmentId: '',
           ownerId: '',
         });
-        setPhases([]);
         setShowNewDepartment(false);
         setShowNewCategory(false);
         setNewDepartmentName('');
@@ -432,111 +371,6 @@ export function NewProjectDialog({ departments, users }: NewProjectDialogProps) 
                   type="date"
                 />
               </div>
-            </div>
-
-            {/* Roadmap Section */}
-            <div className="border-t pt-4 mt-4">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold">Project Roadmap</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Optionally add phases to your project roadmap
-                  </p>
-                </div>
-                <Button type="button" variant="outline" size="sm" onClick={addPhase}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Phase
-                </Button>
-              </div>
-              
-              {phases.length > 0 && (
-                <div className="space-y-4">
-                  {phases.map((phase, index) => (
-                    <Card key={index}>
-                      <CardContent className="pt-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <h4 className="font-medium">Phase {index + 1}</h4>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removePhase(index)}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                        <div className="grid gap-4">
-                          <div className="grid gap-2">
-                            <Label>Phase Name *</Label>
-                            <Input
-                              value={phase.phaseName}
-                              onChange={(e) => updatePhase(index, 'phaseName', e.target.value)}
-                              placeholder="e.g., Planning & Requirements"
-                              required={phases.length > 0}
-                            />
-                          </div>
-                          <div className="grid gap-2">
-                            <Label>Description</Label>
-                            <Textarea
-                              value={phase.description}
-                              onChange={(e) => updatePhase(index, 'description', e.target.value)}
-                              placeholder="Describe what this phase entails"
-                              rows={2}
-                            />
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                              <Label>Status</Label>
-                              <Select
-                                value={phase.status}
-                                onValueChange={(value) => updatePhase(index, 'status', value)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="NOT_STARTED">Not Started</SelectItem>
-                                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                                  <SelectItem value="COMPLETED">Completed</SelectItem>
-                                  <SelectItem value="BLOCKED">Blocked</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="grid gap-2">
-                              <Label>Progress (%)</Label>
-                              <Input
-                                type="number"
-                                min="0"
-                                max="100"
-                                value={phase.progressPercentage}
-                                onChange={(e) => updatePhase(index, 'progressPercentage', e.target.value)}
-                              />
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                              <Label>Start Date</Label>
-                              <Input
-                                type="date"
-                                value={phase.startDate}
-                                onChange={(e) => updatePhase(index, 'startDate', e.target.value)}
-                              />
-                            </div>
-                            <div className="grid gap-2">
-                              <Label>Target End Date</Label>
-                              <Input
-                                type="date"
-                                value={phase.targetEndDate}
-                                onChange={(e) => updatePhase(index, 'targetEndDate', e.target.value)}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* Key Highlight Remarks Section */}

@@ -58,38 +58,9 @@ export function Timeline({ phases, currentPhaseId, projectStartDate, projectTarg
   const hasPhasesOutsideTimeline = phases.length > phasesWithinTimeline.length;
 
   return (
-    <div className="relative space-y-8">
-      {/* Project Timeline Boundaries */}
-      {(projectStartDate || projectTargetCompletionDate) && (
-        <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-dashed">
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="h-3 w-3 rounded-full bg-blue-500" />
-              <span className="font-medium">Project Timeline:</span>
-            </div>
-            {projectStartDate && (
-              <span>
-                <span className="text-muted-foreground">Start: </span>
-                <span className="font-medium">{formatDate(projectStartDate)}</span>
-              </span>
-            )}
-            {projectTargetCompletionDate && (
-              <span>
-                <span className="text-muted-foreground">Target Completion: </span>
-                <span className="font-medium">{formatDate(projectTargetCompletionDate)}</span>
-              </span>
-            )}
-            {hasPhasesOutsideTimeline && (
-              <Badge variant="outline" className="ml-auto">
-                Some phases outside timeline
-              </Badge>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Timeline Line */}
-      <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-border" />
+    <div className="relative space-y-6">
+      {/* Timeline Line - Enhanced */}
+      <div className="absolute left-7 top-0 bottom-0 w-1 bg-gradient-to-b from-border via-border to-border" />
 
       {phases.map((phase, index) => {
         const isLast = index === phases.length - 1;
@@ -97,108 +68,120 @@ export function Timeline({ phases, currentPhaseId, projectStartDate, projectTarg
         const daysUntilEnd = phase.targetEndDate ? getDaysUntil(phase.targetEndDate) : null;
 
         return (
-          <div key={phase.id} className="relative pl-14">
-            {/* Phase Icon */}
-            <div className="absolute left-2 top-0 flex h-8 w-8 items-center justify-center rounded-full bg-background border-2 border-border">
+          <div key={phase.id} className="relative pl-16">
+            {/* Phase Icon - Enhanced Enterprise Style */}
+            <div className={`absolute left-3 top-2 flex h-10 w-10 items-center justify-center rounded-full bg-background border-3 shadow-md ${
+              isCurrent ? 'border-primary border-2' : 'border-border border-2'
+            }`}>
               {getPhaseIcon(phase.status)}
             </div>
 
-            {/* Phase Card */}
-            <Card className={isCurrent ? 'border-primary shadow-lg' : ''}>
+            {/* Phase Card - Enterprise Style */}
+            <Card className={isCurrent ? 'border-primary border-2 shadow-lg' : 'border-2'}>
               <CardContent className="pt-6 space-y-4">
                 {/* Phase Header */}
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-semibold">{phase.phaseName}</h3>
-                      {isCurrent && <Badge>Current</Badge>}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h3 className="text-xl font-bold">{phase.phaseName}</h3>
+                      {isCurrent && (
+                        <Badge className="bg-black text-white hover:bg-black/90 font-semibold">
+                          Current
+                        </Badge>
+                      )}
                     </div>
                     {phase.description && (
-                      <p className="text-sm text-muted-foreground">{phase.description}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {phase.description}
+                      </p>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <StatusBadge status={phase.status} />
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setEditingPhase(phase.id)}
+                      className="h-8 w-8 p-0"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
 
-                {/* Phase Dates */}
-                <div className="flex gap-6 text-sm">
+                {/* Phase Dates - Enterprise Layout */}
+                <div className="flex flex-wrap gap-6 text-sm">
                   {phase.startDate && (
                     <div>
-                      <span className="text-muted-foreground">Start: </span>
-                      <span className="font-medium">{formatDate(phase.startDate)}</span>
+                      <span className="text-muted-foreground font-medium">Start: </span>
+                      <span className="font-semibold">{formatDate(phase.startDate)}</span>
                     </div>
                   )}
                   {phase.targetEndDate && (
                     <div>
-                      <span className="text-muted-foreground">Target: </span>
-                      <span className="font-medium">{formatDate(phase.targetEndDate)}</span>
+                      <span className="text-muted-foreground font-medium">Target: </span>
+                      <span className="font-semibold">{formatDate(phase.targetEndDate)}</span>
                       {daysUntilEnd !== null && daysUntilEnd > 0 && (
-                        <span className="ml-1 text-muted-foreground">({daysUntilEnd} days)</span>
+                        <span className="ml-1 text-muted-foreground">({daysUntilEnd} days remaining)</span>
                       )}
                     </div>
                   )}
                   {phase.endDate && (
                     <div>
-                      <span className="text-muted-foreground">Completed: </span>
-                      <span className="font-medium">{formatDate(phase.endDate)}</span>
+                      <span className="text-muted-foreground font-medium">Completed: </span>
+                      <span className="font-semibold">{formatDate(phase.endDate)}</span>
                     </div>
                   )}
                 </div>
 
-                {/* Progress */}
+                {/* Progress Bar - Enterprise Style */}
                 {phase.progressPercentage !== null && (
-                  <div className="space-y-2">
+                  <div className="space-y-2 pt-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Progress</span>
-                      <span className="font-medium">{phase.progressPercentage}%</span>
+                      <span className="text-muted-foreground font-medium">Progress</span>
+                      <span className="font-semibold">{phase.progressPercentage}%</span>
                     </div>
-                    <Progress value={phase.progressPercentage} />
+                    <Progress value={phase.progressPercentage} className="h-2.5" />
                   </div>
                 )}
 
-                {/* Milestones */}
+                {/* Milestones - Enterprise Style */}
                 {phase.milestones.length > 0 && (
-                  <div className="space-y-3 pt-2 border-t">
-                    <h4 className="text-sm font-medium">Milestones</h4>
-                    <div className="space-y-2">
+                  <div className="space-y-4 pt-4 border-t-2">
+                    <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                      Milestones
+                    </h4>
+                    <div className="space-y-3">
                       {phase.milestones.map((milestone) => {
                         const daysUntilMilestone = milestone.targetDate ? getDaysUntil(milestone.targetDate) : null;
                         
                         return (
-                          <div key={milestone.id} className="flex items-start gap-3">
-                            <div className="mt-0.5">
+                          <div key={milestone.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                            <div className="mt-0.5 flex-shrink-0">
                               {getMilestoneIcon(milestone.isCompleted, milestone.targetDate)}
                             </div>
-                            <div className="flex-1 space-y-1">
-                              <div className="flex items-center justify-between">
-                                <span className={`text-sm font-medium ${milestone.isCompleted ? 'text-muted-foreground line-through' : ''}`}>
+                            <div className="flex-1 space-y-1.5 min-w-0">
+                              <div className="flex items-center justify-between gap-2 flex-wrap">
+                                <span className={`text-sm font-semibold ${milestone.isCompleted ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
                                   {milestone.milestoneName}
                                 </span>
                                 {milestone.targetDate && (
-                                  <span className="text-xs text-muted-foreground">
+                                  <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">
                                     {formatDate(milestone.targetDate)}
                                     {!milestone.isCompleted && daysUntilMilestone !== null && daysUntilMilestone < 0 && (
-                                      <span className="ml-1 text-red-600">(Overdue)</span>
+                                      <span className="ml-1 text-red-600 font-semibold">(Overdue)</span>
                                     )}
                                   </span>
                                 )}
                               </div>
                               {milestone.description && (
-                                <p className="text-xs text-muted-foreground">{milestone.description}</p>
+                                <p className="text-xs text-muted-foreground leading-relaxed">{milestone.description}</p>
                               )}
                               {milestone.deliverables && (
-                                <p className="text-xs text-muted-foreground">
-                                  <strong>Deliverables:</strong> {milestone.deliverables}
-                                </p>
+                                <div className="text-xs">
+                                  <span className="font-semibold text-muted-foreground">Deliverables: </span>
+                                  <span className="text-muted-foreground">{milestone.deliverables}</span>
+                                </div>
                               )}
                             </div>
                           </div>

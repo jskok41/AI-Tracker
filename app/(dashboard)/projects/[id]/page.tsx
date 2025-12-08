@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/dashboard/status-badge';
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { formatDate } from '@/lib/utils';
-import { DollarSign, TrendingUp, Target, AlertTriangle, Calendar, User, Map } from 'lucide-react';
+import { DollarSign, TrendingUp, Target, AlertTriangle, Calendar, User } from 'lucide-react';
 import prisma from '@/lib/db';
 import { format } from 'date-fns';
 import { ProjectStatusControl } from '@/components/dashboard/project-status-control';
@@ -129,12 +129,6 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               <span className="font-medium">{formatDate(project.startDate)}</span>
             </div>
           )}
-          <Link href={`/roadmap?projectId=${project.id}`}>
-            <Button variant="outline" size="sm">
-              <Map className="h-4 w-4 mr-2" />
-              View Roadmap
-            </Button>
-          </Link>
         </div>
       </div>
 

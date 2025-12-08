@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   TrendingUp,
   BarChart3,
-  Map,
   Tag,
   Building2,
 } from 'lucide-react';
@@ -21,7 +20,6 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Projects', href: '/projects', icon: FolderKanban },
   { name: 'Risk Management', href: '/risks', icon: AlertTriangle },
-  { name: 'Roadmap', href: '/roadmap', icon: Map },
   { name: 'Reports', href: '/reports', icon: BarChart3 },
 ];
 

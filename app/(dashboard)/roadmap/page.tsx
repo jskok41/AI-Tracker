@@ -81,11 +81,11 @@ export default async function RoadmapPage({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Header */}
+      {/* Enterprise Header */}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Project Roadmap</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             Track project phases, milestones, and implementation progress across all projects
           </p>
         </div>
@@ -104,44 +104,44 @@ export default async function RoadmapPage({
         </div>
       </div>
 
-      {/* Overall Statistics */}
+      {/* Overall Statistics - Enterprise Cards */}
       {totalProjects > 0 && (
         <div className="grid gap-4 md:grid-cols-4">
-          <Card>
+          <Card className="border-2">
             <CardContent className="pt-6">
               <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Total Projects</div>
-                <div className="text-2xl font-bold">{totalProjects}</div>
+                <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Total Projects</div>
+                <div className="text-3xl font-bold">{totalProjects}</div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-2">
             <CardContent className="pt-6">
               <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Total Phases</div>
-                <div className="text-2xl font-bold">{completedPhases}/{totalPhases}</div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Total Phases</div>
+                <div className="text-3xl font-bold">{completedPhases}/{totalPhases}</div>
+                <div className="text-xs text-muted-foreground mt-1">
                   {totalPhases > 0 ? `${((completedPhases / totalPhases) * 100).toFixed(0)}% complete` : 'No phases'}
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-2">
             <CardContent className="pt-6">
               <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Total Milestones</div>
-                <div className="text-2xl font-bold">{completedMilestones}/{totalMilestones}</div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Total Milestones</div>
+                <div className="text-3xl font-bold">{completedMilestones}/{totalMilestones}</div>
+                <div className="text-xs text-muted-foreground mt-1">
                   {totalMilestones > 0 ? `${((completedMilestones / totalMilestones) * 100).toFixed(0)}% complete` : 'No milestones'}
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-2">
             <CardContent className="pt-6">
               <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Active Projects</div>
-                <div className="text-2xl font-bold">
+                <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Active Projects</div>
+                <div className="text-3xl font-bold">
                   {projects.filter(p => 
                     p.status === 'PLANNING' || 
                     p.status === 'PILOT' || 

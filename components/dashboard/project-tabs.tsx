@@ -8,11 +8,8 @@ import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/dashboard/status-badge';
 import { AreaChartComponent } from '@/components/dashboard/area-chart';
 import { formatCurrency, formatDate, formatPercentage } from '@/lib/utils';
-import { Edit, Plus, Map } from 'lucide-react';
-import { EditPhaseDialog } from '@/components/dashboard/edit-phase-dialog';
-import { AddPhaseDialog } from '@/components/dashboard/add-phase-dialog';
+import { Edit, Plus } from 'lucide-react';
 import { AddMetricDialog } from '@/components/dashboard/add-metric-dialog';
-import { Timeline } from '@/components/roadmap/timeline';
 import { AddROIDialog } from '@/components/dashboard/add-roi-dialog';
 import { AddFeedbackDialog } from '@/components/dashboard/add-feedback-dialog';
 import { EditRiskDialog } from '@/components/dashboard/edit-risk-dialog';
@@ -94,7 +91,6 @@ export function ProjectTabs({
   users,
   projects,
 }: ProjectTabsProps) {
-  const [editingPhase, setEditingPhase] = useState<string | null>(null);
   const [editingROI, setEditingROI] = useState<string | null>(null);
   const [editingRisk, setEditingRisk] = useState<string | null>(null);
 
@@ -102,7 +98,6 @@ export function ProjectTabs({
     <Tabs defaultValue="overview" className="space-y-4">
       <TabsList>
         <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="roadmap">Roadmap</TabsTrigger>
         <TabsTrigger value="metrics">Metrics</TabsTrigger>
         <TabsTrigger value="roi">ROI</TabsTrigger>
         <TabsTrigger value="risks">Risks</TabsTrigger>
@@ -121,171 +116,6 @@ export function ProjectTabs({
           />
         )}
 
-      </TabsContent>
-
-      <TabsContent value="roadmap" className="space-y-4">
-        {/* Roadmap Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Project Roadmap</h2>
-            <p className="text-muted-foreground">
-              Track phases, milestones, and implementation progress
-            </p>
-          </div>
-          <AddPhaseDialog projectId={project.id} existingPhasesCount={project.phases.length} />
-        </div>
-
-        {/* Project Timeline Info */}
-        {(project.startDate || project.targetCompletionDate) && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Project Timeline</CardTitle>
-              <CardDescription>
-                Overall project schedule and boundaries
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-6 text-sm">
-                {project.startDate && (
-                  <div>
-                    <span className="text-muted-foreground">Project Start: </span>
-                    <span className="font-medium">{formatDate(project.startDate)}</span>
-                  </div>
-                )}
-                {project.targetCompletionDate && (
-                  <div>
-                    <span className="text-muted-foreground">Target Completion: </span>
-                    <span className="font-medium">{formatDate(project.targetCompletionDate)}</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Roadmap Timeline */}
-        {project.phases.length > 0 ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Implementation Timeline</CardTitle>
-              <CardDescription>
-                Project phases with milestones and deliverables
-                {project.startDate && project.targetCompletionDate && (
-                  <span className="block mt-1">
-                    Project timeline: {formatDate(project.startDate)} → {formatDate(project.targetCompletionDate)}
-                  </span>
-                )}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Timeline 
-                phases={project.phases as any}
-                currentPhaseId={project.phases.find(p => p.status === 'IN_PROGRESS')?.id}
-                projectStartDate={project.startDate}
-                projectTargetCompletionDate={project.targetCompletionDate}
-              />
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardContent className="pt-12">
-              <div className="text-center py-12 border-2 border-dashed rounded-lg bg-muted/20">
-                <div className="space-y-4">
-                  <div className="flex justify-center">
-                    <div className="rounded-full bg-muted p-3">
-                      <Map className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">No roadmap phases yet</h3>
-                    <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                      Create phases to track your project's implementation progress, milestones, and timeline.
-                    </p>
-                  </div>
-                  <AddPhaseDialog 
-                    projectId={project.id} 
-                    existingPhasesCount={0}
-                    triggerButton={
-                      <Button>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Create First Phase
-                      </Button>
-                    }
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Phases Summary */}
-        {project.phases.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Phases Summary</CardTitle>
-              <CardDescription>
-                Quick overview of all project phases with edit functionality
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {project.phases.map((phase) => (
-                  <div key={phase.id} className="space-y-2 p-4 border rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-medium">{phase.phaseName}</h4>
-                        <StatusBadge status={phase.status as any} />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">
-                          {phase.progressPercentage ?? 0}% complete
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setEditingPhase(phase.id)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    {phase.description && (
-                      <p className="text-sm text-muted-foreground">{phase.description}</p>
-                    )}
-                    {phase.milestones.length > 0 && (
-                      <div className="ml-4 space-y-1 text-sm">
-                        {phase.milestones.map((milestone) => (
-                          <div
-                            key={milestone.id}
-                            className="flex items-center gap-2 text-muted-foreground"
-                          >
-                            <div
-                              className={`h-2 w-2 rounded-full ${
-                                milestone.isCompleted
-                                  ? 'bg-green-500'
-                                  : 'bg-gray-300'
-                              }`}
-                            />
-                            <span>{milestone.milestoneName}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {editingPhase === phase.id && (
-                      <EditPhaseDialog
-                        phase={phase}
-                        open={editingPhase === phase.id}
-                        onOpenChange={(open) =>
-                          !open && setEditingPhase(null)
-                        }
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </TabsContent>
 
       <TabsContent value="metrics" className="space-y-4">

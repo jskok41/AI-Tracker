@@ -51,61 +51,67 @@ export function ProjectRoadmapCard({ project, defaultOpen = false }: ProjectRoad
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="transition-all">
+      <Card className="transition-all border-2">
         <CollapsibleTrigger className="w-full">
-          <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-3 flex-1">
-                <div className="mt-1">
-                  {isOpen ? (
-                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                  ) : (
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <CardTitle className="text-lg">{project.name}</CardTitle>
-                    <StatusBadge status={project.status as any} />
-                    {project.department && (
-                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300 text-xs">
-                        <div className="flex items-center gap-1.5">
-                          <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                          {project.department.name}
-                        </div>
-                      </Badge>
-                    )}
-                    <Link 
-                      href={`/projects/${project.id}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="hover:text-primary transition-colors"
-                    >
-                      <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-primary" />
-                    </Link>
-                  </div>
-                  <CardDescription>
-                    {project.startDate && project.targetCompletionDate ? (
-                      <span>
-                        {formatDate(project.startDate)} → {formatDate(project.targetCompletionDate)}
-                      </span>
+          <CardHeader className="cursor-pointer hover:bg-muted/30 transition-colors pb-4">
+            {/* Enterprise Header Layout */}
+            <div className="space-y-4">
+              {/* Top Row: Title, Tags, External Link */}
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-3 flex-1">
+                  <div className="mt-1">
+                    {isOpen ? (
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     ) : (
-                      'No timeline set'
+                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
                     )}
-                  </CardDescription>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 flex-wrap mb-2">
+                      <CardTitle className="text-xl font-bold">{project.name}</CardTitle>
+                      <StatusBadge status={project.status as any} />
+                      {project.department && (
+                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300 text-xs font-medium">
+                          <div className="flex items-center gap-1.5">
+                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                            {project.department.name}
+                          </div>
+                        </Badge>
+                      )}
+                      <Link 
+                        href={`/projects/${project.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="hover:text-primary transition-colors"
+                      >
+                        <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-4 text-sm">
+
+              {/* Middle Row: Project Dates (Centered) */}
+              {project.startDate && project.targetCompletionDate && (
+                <div className="text-center">
+                  <CardDescription className="text-base font-medium">
+                    {formatDate(project.startDate)} → {formatDate(project.targetCompletionDate)}
+                  </CardDescription>
+                </div>
+              )}
+
+              {/* Bottom Row: Quick Stats Summary */}
+              <div className="flex items-center justify-end gap-6 text-sm">
                 <div className="text-right">
-                  <div className="text-xs text-muted-foreground">Progress</div>
-                  <div className="font-semibold">{overallProgress.toFixed(0)}%</div>
+                  <div className="text-xs text-muted-foreground font-medium">Progress</div>
+                  <div className="text-lg font-bold">{overallProgress.toFixed(0)}%</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs text-muted-foreground">Phases</div>
-                  <div className="font-semibold">{completedPhases}/{totalPhases}</div>
+                  <div className="text-xs text-muted-foreground font-medium">Phases</div>
+                  <div className="text-lg font-bold">{completedPhases}/{totalPhases}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs text-muted-foreground">Milestones</div>
-                  <div className="font-semibold">{completedMilestones}/{totalMilestones}</div>
+                  <div className="text-xs text-muted-foreground font-medium">Milestones</div>
+                  <div className="text-lg font-bold">{completedMilestones}/{totalMilestones}</div>
                 </div>
               </div>
             </div>
@@ -113,88 +119,85 @@ export function ProjectRoadmapCard({ project, defaultOpen = false }: ProjectRoad
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          <CardContent className="pt-0 space-y-6">
-            {/* Project Overview Cards */}
+          <CardContent className="pt-6 space-y-6">
+            {/* Enterprise Metric Cards - Top Row */}
             <div className="grid gap-4 md:grid-cols-3">
-              <Card>
+              {/* Overall Progress Card */}
+              <Card className="border-2">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                  <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                     Overall Progress
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="text-2xl font-bold">{overallProgress.toFixed(0)}%</div>
-                    <Progress value={overallProgress} />
-                    <p className="text-xs text-muted-foreground">
-                      {completedPhases} of {totalPhases} phases completed
-                    </p>
-                  </div>
+                <CardContent className="space-y-3">
+                  <div className="text-3xl font-bold">{overallProgress.toFixed(0)}%</div>
+                  <Progress value={overallProgress} className="h-2" />
+                  <p className="text-xs text-muted-foreground">
+                    {completedPhases} of {totalPhases} phases completed
+                  </p>
                 </CardContent>
               </Card>
 
-              <Card>
+              {/* Current Phase Card */}
+              <Card className="border-2">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                  <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                     Current Phase
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-1">
-                    <div className="text-lg font-bold">
-                      {currentPhase ? currentPhase.phaseName : 'All Complete'}
-                    </div>
-                    {currentPhase && (
-                      <p className="text-xs text-muted-foreground">
-                        {currentPhase.progressPercentage ?? 0}% progress
-                      </p>
-                    )}
+                <CardContent className="space-y-2">
+                  <div className="text-xl font-bold">
+                    {currentPhase ? currentPhase.phaseName : 'All Complete'}
                   </div>
+                  {currentPhase && (
+                    <p className="text-sm text-muted-foreground">
+                      {currentPhase.progressPercentage ?? 0}% progress
+                    </p>
+                  )}
                 </CardContent>
               </Card>
 
-              <Card>
+              {/* Milestones Card */}
+              <Card className="border-2">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                  <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                     Milestones
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-1">
-                    <div className="text-2xl font-bold">
-                      {completedMilestones}/{totalMilestones}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {totalMilestones > 0 
-                        ? `${((completedMilestones / totalMilestones) * 100).toFixed(0)}% complete` 
-                        : 'No milestones'}
-                    </p>
+                <CardContent className="space-y-2">
+                  <div className="text-3xl font-bold">
+                    {completedMilestones}/{totalMilestones}
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    {totalMilestones > 0 
+                      ? `${((completedMilestones / totalMilestones) * 100).toFixed(0)}% complete` 
+                      : 'No milestones'}
+                  </p>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Project Timeline Info */}
+            {/* Project Timeline Section */}
             {(project.startDate || project.targetCompletionDate) && (
-              <Card>
+              <Card className="border-2">
                 <CardHeader>
-                  <CardTitle className="text-base">Project Timeline</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg font-semibold">Project Timeline</CardTitle>
+                  <CardDescription className="text-sm">
                     Overall project schedule and boundaries
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex gap-6 text-sm">
+                  <div className="flex flex-wrap gap-6 text-sm">
                     {project.startDate && (
                       <div>
-                        <span className="text-muted-foreground">Project Start: </span>
-                        <span className="font-medium">{formatDate(project.startDate)}</span>
+                        <span className="text-muted-foreground font-medium">Project Start: </span>
+                        <span className="font-semibold">{formatDate(project.startDate)}</span>
                       </div>
                     )}
                     {project.targetCompletionDate && (
                       <div>
-                        <span className="text-muted-foreground">Target Completion: </span>
-                        <span className="font-medium">{formatDate(project.targetCompletionDate)}</span>
+                        <span className="text-muted-foreground font-medium">Target Completion: </span>
+                        <span className="font-semibold">{formatDate(project.targetCompletionDate)}</span>
                       </div>
                     )}
                   </div>
@@ -202,21 +205,21 @@ export function ProjectRoadmapCard({ project, defaultOpen = false }: ProjectRoad
               </Card>
             )}
 
-            {/* Timeline */}
+            {/* Implementation Timeline Section */}
             {project.phases.length > 0 ? (
-              <Card>
+              <Card className="border-2">
                 <CardHeader>
-                  <CardTitle className="text-base">Implementation Timeline</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg font-semibold">Implementation Timeline</CardTitle>
+                  <CardDescription className="text-sm">
                     Project phases with milestones and deliverables
                     {project.startDate && project.targetCompletionDate && (
-                      <span className="block mt-1">
+                      <span className="block mt-1 font-medium">
                         Project timeline: {formatDate(project.startDate)} → {formatDate(project.targetCompletionDate)}
                       </span>
                     )}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <Timeline 
                     phases={project.phases}
                     currentPhaseId={currentPhase?.id}
@@ -226,14 +229,14 @@ export function ProjectRoadmapCard({ project, defaultOpen = false }: ProjectRoad
                 </CardContent>
               </Card>
             ) : (
-              <Card>
+              <Card className="border-2">
                 <CardHeader>
-                  <CardTitle className="text-base">Implementation Timeline</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg font-semibold">Implementation Timeline</CardTitle>
+                  <CardDescription className="text-sm">
                     No phases defined for this project yet.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="text-center py-8">
+                <CardContent className="text-center py-12">
                   <p className="text-sm text-muted-foreground mb-4">
                     Add phases to track your project's implementation progress.
                   </p>
