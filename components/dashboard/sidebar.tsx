@@ -76,12 +76,26 @@ function SidebarContent({ departments, categories }: SidebarProps) {
     const params = new URLSearchParams(searchParams.toString());
     const currentSelected = getSelectedDepartments();
     
+    // If "All" is currently selected (empty array), start fresh with just this department
+    const isAllCurrentlySelected = currentSelected.length === 0;
+    
     let newSelected: string[];
-    if (currentSelected.includes(departmentId)) {
+    if (isAllCurrentlySelected) {
+      // "All" was selected, so select only this department
+      newSelected = [departmentId];
+    } else if (currentSelected.includes(departmentId)) {
       // Remove department
       newSelected = currentSelected.filter(id => id !== departmentId);
+      
+      // If no departments remain, this means "All" should be selected
+      if (newSelected.length === 0) {
+        params.delete('departmentId');
+        setSelectedDepartments([]);
+        router.push(`${pathname}?${params.toString()}`);
+        return;
+      }
     } else {
-      // Add department
+      // Add department to existing selection
       newSelected = [...currentSelected, departmentId];
     }
 

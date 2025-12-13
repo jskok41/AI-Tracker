@@ -1,5 +1,6 @@
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { ExpandableProjectList } from '@/components/dashboard/expandable-project-list';
+import { CategoryBreakdown } from '@/components/dashboard/category-breakdown';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatRelativeTime } from '@/lib/utils';
 import { DollarSign, TrendingUp, AlertTriangle, FolderKanban, Target, Users } from 'lucide-react';
@@ -90,11 +91,61 @@ async function getDashboardData(departmentIds?: string[]) {
     _count: true,
   });
 
-  // Get projects by category
-  const projectsByCategory = await prisma.aIProject.groupBy({
+  // Get projects by category with sub-category breakdown
+  const projectsByCategoryRaw = await prisma.aIProject.groupBy({
     where,
     by: ['category'],
     _count: true,
+  });
+
+  // Get all projects to derive sub-categories from Department & Team
+  const allProjectsForSubCategories = await prisma.aIProject.findMany({
+    where,
+    select: {
+      category: true,
+      team: true,
+      department: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  // Group projects by category and derive sub-categories
+  const projectsByCategory = projectsByCategoryRaw.map((cat) => {
+    const categoryProjects = allProjectsForSubCategories.filter(p => p.category === cat.category);
+    
+    // Derive sub-categories from Department & Team
+    const subCategoryMap = new Map<string, number>();
+    
+    categoryProjects.forEach(project => {
+      // Use team field (Department & Team), or combine department name with team, or use department name, or "Unspecified"
+      let subCategory = 'Unspecified';
+      
+      if (project.team?.trim()) {
+        // Use the team field directly (it contains "Department & team" format)
+        subCategory = project.team.trim();
+      } else if (project.department?.name) {
+        // Fallback to department name if team is not available
+        subCategory = project.department.name;
+      }
+      
+      subCategoryMap.set(subCategory, (subCategoryMap.get(subCategory) || 0) + 1);
+    });
+
+    const subCategories = Array.from(subCategoryMap.entries())
+      .map(([subCategory, count]) => ({
+        subCategory,
+        count,
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    return {
+      category: cat.category,
+      count: cat._count,
+      subCategories: subCategories.length > 0 ? subCategories : undefined,
+    };
   });
 
   // Get recent alerts (filtered by selected departments if applicable)
@@ -251,21 +302,17 @@ export default async function DashboardPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Projects by Category</CardTitle>
-            <CardDescription>AI initiatives breakdown</CardDescription>
+            <CardTitle>Projects by Category and Sub-Category</CardTitle>
+            <CardDescription>Detailed breakdown of AI initiatives by category and deployment approach</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {data.projectsByCategory.map((item) => (
-                <div key={item.category} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-blue-500" />
-                    <span className="text-sm capitalize">{item.category.toLowerCase().replace(/_/g, ' ')}</span>
-                  </div>
-                  <span className="text-sm font-medium">{item._count}</span>
-                </div>
-              ))}
-            </div>
+            <CategoryBreakdown 
+              categories={data.projectsByCategory.map(cat => ({
+                category: cat.category,
+                count: cat.count,
+                subCategories: cat.subCategories,
+              }))}
+            />
           </CardContent>
         </Card>
       </div>
