@@ -1,6 +1,7 @@
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { ExpandableProjectList } from '@/components/dashboard/expandable-project-list';
 import { CategoryBreakdown } from '@/components/dashboard/category-breakdown';
+import { StatusBreakdown } from '@/components/dashboard/status-breakdown';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatRelativeTime } from '@/lib/utils';
 import { DollarSign, TrendingUp, AlertTriangle, FolderKanban, Target, Users } from 'lucide-react';
@@ -84,11 +85,62 @@ async function getDashboardData(departmentIds?: string[]) {
     where: criticalRisksWhere,
   });
 
-  // Get projects by status
-  const projectsByStatus = await prisma.aIProject.groupBy({
+  // Get projects by status with project breakdown
+  const projectsByStatusRaw = await prisma.aIProject.groupBy({
     where,
     by: ['status'],
     _count: true,
+  });
+
+  // Get all projects to derive project breakdown by Department & Team for each status
+  const allProjectsForStatusBreakdown = await prisma.aIProject.findMany({
+    where,
+    select: {
+      status: true,
+      name: true,
+      team: true,
+      department: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  // Group projects by status and derive project breakdown
+  const projectsByStatus = projectsByStatusRaw.map((statusItem) => {
+    const statusProjects = allProjectsForStatusBreakdown.filter(p => p.status === statusItem.status);
+    
+    // Group projects by Department & Team (similar to Category breakdown)
+    const projectMap = new Map<string, number>();
+    
+    statusProjects.forEach(project => {
+      // Use team field (Department & Team), or department name, or project name, or "Unspecified"
+      let projectKey = 'Unspecified';
+      
+      if (project.team?.trim()) {
+        projectKey = project.team.trim();
+      } else if (project.department?.name) {
+        projectKey = project.department.name;
+      } else if (project.name?.trim()) {
+        projectKey = project.name.trim();
+      }
+      
+      projectMap.set(projectKey, (projectMap.get(projectKey) || 0) + 1);
+    });
+
+    const projects = Array.from(projectMap.entries())
+      .map(([projectName, count]) => ({
+        projectName,
+        count,
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    return {
+      status: statusItem.status,
+      count: statusItem._count,
+      projects: projects.length > 0 ? projects : undefined,
+    };
   });
 
   // Get projects by category with sub-category breakdown
@@ -283,20 +335,16 @@ export default async function DashboardPage({
         <Card>
           <CardHeader>
             <CardTitle>Projects by Status</CardTitle>
-            <CardDescription>Current distribution of AI projects</CardDescription>
+            <CardDescription>Current distribution of AI projects with detailed breakdown</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {data.projectsByStatus.map((item) => (
-                <div key={item.status} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-primary" />
-                    <span className="text-sm capitalize">{item.status.toLowerCase().replace(/_/g, ' ')}</span>
-                  </div>
-                  <span className="text-sm font-medium">{item._count}</span>
-                </div>
-              ))}
-            </div>
+            <StatusBreakdown 
+              statuses={data.projectsByStatus.map(status => ({
+                status: status.status,
+                count: status.count,
+                projects: status.projects,
+              }))}
+            />
           </CardContent>
         </Card>
 
@@ -348,16 +396,16 @@ export default async function DashboardPage({
               data.recentAlerts.map((alert) => (
                 <div key={alert.id} className="flex items-start gap-4 border-b pb-4 last:border-0 last:pb-0">
                   <div className={`mt-1 rounded-full p-2 ${
-                    alert.severity === 'CRITICAL' ? 'bg-red-100' :
-                    alert.severity === 'WARNING' ? 'bg-yellow-100' :
-                    alert.severity === 'ERROR' ? 'bg-orange-100' :
-                    'bg-blue-100'
+                    alert.severity === 'CRITICAL' ? 'bg-red-100 dark:bg-red-900/30' :
+                    alert.severity === 'WARNING' ? 'bg-yellow-100 dark:bg-yellow-900/30' :
+                    alert.severity === 'ERROR' ? 'bg-orange-100 dark:bg-orange-900/30' :
+                    'bg-blue-100 dark:bg-blue-900/30'
                   }`}>
                     <AlertTriangle className={`h-4 w-4 ${
-                      alert.severity === 'CRITICAL' ? 'text-red-600' :
-                      alert.severity === 'WARNING' ? 'text-yellow-600' :
-                      alert.severity === 'ERROR' ? 'text-orange-600' :
-                      'text-blue-600'
+                      alert.severity === 'CRITICAL' ? 'text-red-600 dark:text-red-400' :
+                      alert.severity === 'WARNING' ? 'text-yellow-600 dark:text-yellow-400' :
+                      alert.severity === 'ERROR' ? 'text-orange-600 dark:text-orange-400' :
+                      'text-blue-600 dark:text-blue-400'
                     }`} />
                   </div>
                   <div className="flex-1 space-y-1">

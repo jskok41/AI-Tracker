@@ -71,9 +71,9 @@ export function ProjectRoadmapCard({ project, defaultOpen = false }: ProjectRoad
                       <CardTitle className="text-xl font-bold">{project.name}</CardTitle>
                       <StatusBadge status={project.status as any} />
                       {project.department && (
-                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300 text-xs font-medium">
-                          <div className="flex items-center gap-1.5">
-                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                        <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/40 border-blue-300 dark:border-blue-800/40 text-xs font-medium">
+                            <div className="flex items-center gap-1.5">
+                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500 dark:bg-blue-400" />
                             {project.department.name}
                           </div>
                         </Badge>

@@ -52,16 +52,16 @@ interface ExpandableProjectListProps {
 
 // Color mapping for project categories
 const categoryColors: Record<ProjectCategory, { bg: string; border: string; text: string }> = {
-  AI_AGENT: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700' },
-  AI_INITIATIVE: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700' },
-  GEN_AI_PRODUCTION: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700' },
-  PROMPT_LIBRARY: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700' },
-  RISK_MANAGEMENT: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700' },
-  OTHER: { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-700' },
+  AI_AGENT: { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-800/30', text: 'text-blue-700 dark:text-blue-300' },
+  AI_INITIATIVE: { bg: 'bg-purple-50 dark:bg-purple-900/20', border: 'border-purple-200 dark:border-purple-800/30', text: 'text-purple-700 dark:text-purple-300' },
+  GEN_AI_PRODUCTION: { bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-200 dark:border-green-800/30', text: 'text-green-700 dark:text-green-300' },
+  PROMPT_LIBRARY: { bg: 'bg-orange-50 dark:bg-orange-900/20', border: 'border-orange-200 dark:border-orange-800/30', text: 'text-orange-700 dark:text-orange-300' },
+  RISK_MANAGEMENT: { bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-200 dark:border-red-800/30', text: 'text-red-700 dark:text-red-300' },
+  OTHER: { bg: 'bg-gray-50 dark:bg-gray-900/20', border: 'border-gray-200 dark:border-gray-800/30', text: 'text-gray-700 dark:text-gray-300' },
 };
 
 function getCategoryColor(category: ProjectCategory) {
-  return categoryColors[category] || { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-700' };
+  return categoryColors[category] || { bg: 'bg-gray-50 dark:bg-gray-900/20', border: 'border-gray-200 dark:border-gray-800/30', text: 'text-gray-700 dark:text-gray-300' };
 }
 
 function formatCategoryName(category: ProjectCategory): string {
@@ -134,18 +134,18 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                       </Badge>
                       {/* Department Capsule */}
                       {project.department && (
-                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300 text-xs">
+                        <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/40 border-blue-300 dark:border-blue-800/40 text-xs">
                           <div className="flex items-center gap-1.5">
-                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500 dark:bg-blue-400" />
                             {project.department.name}
                           </div>
                         </Badge>
                       )}
                       {/* Team Capsule - Outside Bar UI */}
                       {project.team && (
-                        <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-300 text-xs">
+                        <Badge className="bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800/70 border-gray-300 dark:border-gray-700 text-xs">
                           <div className="flex items-center gap-1.5">
-                            <div className="h-1.5 w-1.5 rounded-full bg-gray-500" />
+                            <div className="h-1.5 w-1.5 rounded-full bg-gray-500 dark:bg-gray-400" />
                             {project.team}
                           </div>
                         </Badge>
@@ -323,47 +323,47 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                       <h4 className="text-sm font-semibold text-muted-foreground mb-4">Key Highlight Remarks</h4>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {project.team && (
-                          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300">
+                          <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/40 border-blue-300 dark:border-blue-800/40">
                             Department & Team
                           </Badge>
                         )}
                         {project.ownerContact && (
-                          <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-300">
+                          <Badge className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/40 border-purple-300 dark:border-purple-800/40">
                             Owner Contact
                           </Badge>
                         )}
                         {project.problemStatement && (
-                          <Badge className="bg-red-100 text-red-800 hover:bg-red-200 border-red-300">
+                          <Badge className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/40 border-red-300 dark:border-red-800/40">
                             Problem Statement
                           </Badge>
                         )}
                         {project.aiMlApproach && (
-                          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-green-300">
+                          <Badge className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/40 border-green-300 dark:border-green-800/40">
                             AI/ML Approach
                           </Badge>
                         )}
                         {project.deploymentEnvironment && (
-                          <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-300">
+                          <Badge className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-900/40 border-orange-300 dark:border-orange-800/40">
                             Deployment & Environment
                           </Badge>
                         )}
                         {project.benefitRealized && (
-                          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border-emerald-300">
+                          <Badge className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/40 border-emerald-300 dark:border-emerald-800/40">
                             Benefit Realized
                           </Badge>
                         )}
                         {project.validationMethod && (
-                          <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200 border-indigo-300">
+                          <Badge className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/40 border-indigo-300 dark:border-indigo-800/40">
                             Validation Method
                           </Badge>
                         )}
                         {project.currentBlockers && (
-                          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300">
+                          <Badge className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/40 border-yellow-300 dark:border-yellow-800/40">
                             Blockers / Support
                           </Badge>
                         )}
                         {project.nextSteps && (
-                          <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 border-teal-300">
+                          <Badge className="bg-teal-100 dark:bg-teal-900/30 text-teal-800 dark:text-teal-300 hover:bg-teal-200 dark:hover:bg-teal-900/40 border-teal-300 dark:border-teal-800/40">
                             Next Steps
                           </Badge>
                         )}
@@ -372,7 +372,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                         {project.team && (
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-blue-500" />
+                              <div className="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-400" />
                               <div className="text-xs font-medium text-muted-foreground">Department & Team</div>
                             </div>
                             <div className="text-sm pl-4">{project.team}</div>
@@ -381,7 +381,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                         {project.ownerContact && (
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-purple-500" />
+                              <div className="h-2 w-2 rounded-full bg-purple-500 dark:bg-purple-400" />
                               <div className="text-xs font-medium text-muted-foreground">Owner Contact</div>
                             </div>
                             <div className="text-sm pl-4">{project.ownerContact}</div>
@@ -390,7 +390,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                         {project.problemStatement && (
                           <div className="space-y-1 md:col-span-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-red-500" />
+                              <div className="h-2 w-2 rounded-full bg-red-500 dark:bg-red-400" />
                               <div className="text-xs font-medium text-muted-foreground">Problem Statement</div>
                             </div>
                             <div className="text-sm whitespace-pre-wrap pl-4">{project.problemStatement}</div>
@@ -399,7 +399,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                         {project.aiMlApproach && (
                           <div className="space-y-1 md:col-span-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-green-500" />
+                              <div className="h-2 w-2 rounded-full bg-green-500 dark:bg-green-400" />
                               <div className="text-xs font-medium text-muted-foreground">AI/ML Approach</div>
                             </div>
                             <div className="text-sm whitespace-pre-wrap pl-4">{project.aiMlApproach}</div>
@@ -408,7 +408,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                         {project.deploymentEnvironment && (
                           <div className="space-y-1 md:col-span-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-orange-500" />
+                              <div className="h-2 w-2 rounded-full bg-orange-500 dark:bg-orange-400" />
                               <div className="text-xs font-medium text-muted-foreground">Deployment Status & Environment</div>
                             </div>
                             <div className="text-sm whitespace-pre-wrap pl-4">{project.deploymentEnvironment}</div>
@@ -417,7 +417,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                         {project.benefitRealized && (
                           <div className="space-y-1 md:col-span-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                              <div className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400" />
                               <div className="text-xs font-medium text-muted-foreground">Benefit Realized</div>
                             </div>
                             <div className="text-sm whitespace-pre-wrap pl-4">{project.benefitRealized}</div>
@@ -426,7 +426,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                         {project.validationMethod && (
                           <div className="space-y-1 md:col-span-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-indigo-500" />
+                              <div className="h-2 w-2 rounded-full bg-indigo-500 dark:bg-indigo-400" />
                               <div className="text-xs font-medium text-muted-foreground">Validation Method</div>
                             </div>
                             <div className="text-sm whitespace-pre-wrap pl-4">{project.validationMethod}</div>
@@ -435,7 +435,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                         {project.currentBlockers && (
                           <div className="space-y-1 md:col-span-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                              <div className="h-2 w-2 rounded-full bg-yellow-500 dark:bg-yellow-400" />
                               <div className="text-xs font-medium text-muted-foreground">Current Blockers / Support Needed</div>
                             </div>
                             <div className="text-sm whitespace-pre-wrap pl-4">{project.currentBlockers}</div>
@@ -444,7 +444,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                         {project.nextSteps && (
                           <div className="space-y-1 md:col-span-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-teal-500" />
+                              <div className="h-2 w-2 rounded-full bg-teal-500 dark:bg-teal-400" />
                               <div className="text-xs font-medium text-muted-foreground">Next Steps</div>
                             </div>
                             <div className="text-sm whitespace-pre-wrap pl-4">{project.nextSteps}</div>

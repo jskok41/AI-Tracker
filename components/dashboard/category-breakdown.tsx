@@ -67,7 +67,7 @@ export function CategoryBreakdown({
                     )}
                   </div>
                 )}
-                <div className="h-2 w-2 rounded-full bg-blue-500 flex-shrink-0" />
+                <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0" />
                 <span className="text-sm capitalize truncate">
                   {category.category.toLowerCase().replace(/_/g, ' ')}
                 </span>

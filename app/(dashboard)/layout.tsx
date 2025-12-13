@@ -42,7 +42,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const sidebarData = await getSidebarData();
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <Sidebar departments={sidebarData.departments} categories={sidebarData.categories} />
 

@@ -192,8 +192,8 @@ export default async function RisksPage({
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'CRITICAL' && r.likelihood === likelihood).length;
               return (
-                <div key={`critical-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-red-50">
-                  <span className="text-sm font-bold text-red-600">{count || ''}</span>
+                <div key={`critical-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/30">
+                  <span className="text-sm font-bold text-red-600 dark:text-red-400">{count || ''}</span>
                 </div>
               );
             })}
@@ -203,8 +203,8 @@ export default async function RisksPage({
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'HIGH' && r.likelihood === likelihood).length;
               return (
-                <div key={`high-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-orange-50">
-                  <span className="text-sm font-bold text-orange-600">{count || ''}</span>
+                <div key={`high-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800/30">
+                  <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{count || ''}</span>
                 </div>
               );
             })}
@@ -214,8 +214,8 @@ export default async function RisksPage({
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'MEDIUM' && r.likelihood === likelihood).length;
               return (
-                <div key={`medium-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-yellow-50">
-                  <span className="text-sm font-bold text-yellow-600">{count || ''}</span>
+                <div key={`medium-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800/30">
+                  <span className="text-sm font-bold text-yellow-600 dark:text-yellow-400">{count || ''}</span>
                 </div>
               );
             })}
@@ -225,8 +225,8 @@ export default async function RisksPage({
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'LOW' && r.likelihood === likelihood).length;
               return (
-                <div key={`low-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-green-50">
-                  <span className="text-sm font-bold text-green-600">{count || ''}</span>
+                <div key={`low-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/30">
+                  <span className="text-sm font-bold text-green-600 dark:text-green-400">{count || ''}</span>
                 </div>
               );
             })}

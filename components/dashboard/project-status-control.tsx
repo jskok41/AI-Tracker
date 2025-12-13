@@ -64,7 +64,7 @@ export function ProjectStatusControl({
   };
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border bg-white/80 p-4 shadow-sm">
+    <div className="flex flex-col gap-2 rounded-lg border bg-card/80 p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-muted-foreground">Project Status</p>

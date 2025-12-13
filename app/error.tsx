@@ -16,7 +16,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="text-center space-y-4">
         <div className="text-red-500 text-6xl">⚠️</div>
         <h1 className="text-2xl font-bold">Something went wrong!</h1>
@@ -38,7 +38,7 @@ export default function Error({
           <summary className="cursor-pointer text-sm text-muted-foreground">
             Error Details (for debugging)
           </summary>
-          <pre className="mt-2 p-4 bg-gray-100 rounded text-xs overflow-auto">
+          <pre className="mt-2 p-4 bg-muted rounded text-xs overflow-auto">
             {error.stack || error.toString()}
           </pre>
         </details>

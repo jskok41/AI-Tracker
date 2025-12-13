@@ -134,7 +134,7 @@ function SidebarContent({ departments, categories }: SidebarProps) {
   };
 
   return (
-    <div className="hidden w-64 flex-col border-r bg-white md:flex">
+    <div className="hidden w-64 flex-col border-r bg-sidebar md:flex">
       {/* Logo */}
       <div className="flex h-16 items-center border-b px-6">
         <Link href="/" className="flex items-center gap-2">
@@ -292,7 +292,7 @@ function SidebarContent({ departments, categories }: SidebarProps) {
 export function Sidebar({ departments, categories }: SidebarProps) {
   return (
     <Suspense fallback={
-      <div className="hidden w-64 flex-col border-r bg-white md:flex">
+      <div className="hidden w-64 flex-col border-r bg-sidebar md:flex">
         <div className="flex h-16 items-center border-b px-6">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-6 w-6 text-primary" />

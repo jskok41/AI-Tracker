@@ -85,7 +85,7 @@ export function Timeline({ phases, currentPhaseId, projectStartDate, projectTarg
                     <div className="flex items-center gap-3 flex-wrap">
                       <h3 className="text-xl font-bold">{phase.phaseName}</h3>
                       {isCurrent && (
-                        <Badge className="bg-black text-white hover:bg-black/90 font-semibold">
+                        <Badge className="bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 font-semibold">
                           Current
                         </Badge>
                       )}
