@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { Header } from '@/components/dashboard/header';
+import { CyberpunkBackgroundWrapper } from '@/components/dashboard/cyberpunk-background-wrapper';
 import prisma from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -42,17 +43,22 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const sidebarData = await getSidebarData();
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-background relative">
+      {/* Cyberpunk Background */}
+      <CyberpunkBackgroundWrapper />
+      
       {/* Sidebar */}
-      <Sidebar departments={sidebarData.departments} categories={sidebarData.categories} />
+      <div className="relative z-20">
+        <Sidebar departments={sidebarData.departments} categories={sidebarData.categories} />
+      </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden relative z-10">
         {/* Header */}
         <Header />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6 relative z-10">
           {children}
         </main>
       </div>

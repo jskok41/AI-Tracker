@@ -95,8 +95,10 @@ export default async function AgentsPage() {
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">AI Agents Performance</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-bold tracking-tight cyberpunk:text-white cyberpunk:drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]">
+          AI Agents Performance
+        </h1>
+        <p className="text-muted-foreground cyberpunk:text-[#00FF41]/70">
           Monitor and analyze AI agent performance metrics
         </p>
       </div>

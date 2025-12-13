@@ -134,12 +134,12 @@ function SidebarContent({ departments, categories }: SidebarProps) {
   };
 
   return (
-    <div className="hidden w-64 flex-col border-r bg-sidebar md:flex">
+    <div className="hidden w-64 flex-col border-r bg-sidebar md:flex cyberpunk:bg-black/80 cyberpunk:backdrop-blur-md cyberpunk:border-[#00FF41]/50 cyberpunk:shadow-[0_0_20px_rgba(0,255,65,0.2)] relative z-20">
       {/* Logo */}
-      <div className="flex h-16 items-center border-b px-6">
+      <div className="flex h-16 items-center border-b px-6 cyberpunk:border-[#00FF41]/30">
         <Link href="/" className="flex items-center gap-2">
-          <TrendingUp className="h-6 w-6 text-primary" />
-          <span className="text-lg font-semibold">AI Tracker</span>
+          <TrendingUp className="h-6 w-6 text-primary cyberpunk:text-[#00FF41]" />
+          <span className="text-lg font-semibold cyberpunk:text-white cyberpunk:drop-shadow-[0_0_8px_rgba(0,255,65,0.5)]">AI Tracker</span>
         </Link>
       </div>
 
@@ -154,8 +154,8 @@ function SidebarContent({ departments, categories }: SidebarProps) {
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? 'bg-primary text-primary-foreground cyberpunk:bg-[#00FF41] cyberpunk:text-black cyberpunk:shadow-[0_0_15px_rgba(0,255,65,0.5)]'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground cyberpunk:text-[#00FF41]/70 cyberpunk:hover:bg-[#00FF41]/10 cyberpunk:hover:text-[#00FF41]'
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -168,8 +168,8 @@ function SidebarContent({ departments, categories }: SidebarProps) {
         {categories.length > 0 && (
           <div className="mt-6 space-y-2">
             <div className="flex items-center justify-between px-3 py-2">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                <Tag className="h-4 w-4" />
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground cyberpunk:text-[#00FF41]/70">
+                <Tag className="h-4 w-4 cyberpunk:text-[#00FF41]/70" />
                 Categories
               </div>
               {(searchParams.get('category') || selectedDepartments.length > 0) && (
@@ -190,8 +190,8 @@ function SidebarContent({ departments, categories }: SidebarProps) {
                   className={cn(
                     'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors',
                     isActive
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? 'bg-primary/10 text-primary font-medium cyberpunk:bg-[#00FF41]/20 cyberpunk:text-[#00FF41] cyberpunk:shadow-[0_0_10px_rgba(0,255,65,0.3)]'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground cyberpunk:text-[#00FF41]/70 cyberpunk:hover:bg-[#00FF41]/10 cyberpunk:hover:text-[#00FF41]'
                   )}
                 >
                   <span className="h-2 w-2 rounded-full bg-current opacity-60" />
@@ -206,8 +206,8 @@ function SidebarContent({ departments, categories }: SidebarProps) {
         {departments.length > 0 && (
           <div className="mt-6 space-y-2">
             <div className="flex items-center justify-between px-3 py-2">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                <Building2 className="h-4 w-4" />
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground cyberpunk:text-[#00FF41]/70">
+                <Building2 className="h-4 w-4 cyberpunk:text-[#00FF41]/70" />
                 Departments
               </div>
               {(selectedDepartments.length > 0 || searchParams.get('category')) && (
@@ -229,8 +229,8 @@ function SidebarContent({ departments, categories }: SidebarProps) {
               className={cn(
                 'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors',
                 isAllSelected
-                  ? 'bg-primary/10 text-primary font-medium'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? 'bg-primary/10 text-primary font-medium cyberpunk:bg-[#00FF41]/20 cyberpunk:text-[#00FF41]'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground cyberpunk:text-[#00FF41]/70 cyberpunk:hover:bg-[#00FF41]/10 cyberpunk:hover:text-[#00FF41]'
               )}
             >
               <Checkbox
@@ -259,8 +259,8 @@ function SidebarContent({ departments, categories }: SidebarProps) {
                   className={cn(
                     'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors',
                     isSelected
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? 'bg-primary/10 text-primary font-medium cyberpunk:bg-[#00FF41]/20 cyberpunk:text-[#00FF41]'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground cyberpunk:text-[#00FF41]/70 cyberpunk:hover:bg-[#00FF41]/10 cyberpunk:hover:text-[#00FF41]'
                   )}
                 >
                   <Checkbox
@@ -280,8 +280,8 @@ function SidebarContent({ departments, categories }: SidebarProps) {
       </nav>
 
       {/* Footer */}
-      <div className="border-t p-4">
-        <div className="text-xs text-muted-foreground">
+      <div className="border-t p-4 cyberpunk:border-[#00FF41]/30">
+        <div className="text-xs text-muted-foreground cyberpunk:text-[#00FF41]/70">
           AI Benefits Tracker v1.0
         </div>
       </div>
@@ -292,15 +292,15 @@ function SidebarContent({ departments, categories }: SidebarProps) {
 export function Sidebar({ departments, categories }: SidebarProps) {
   return (
     <Suspense fallback={
-      <div className="hidden w-64 flex-col border-r bg-sidebar md:flex">
-        <div className="flex h-16 items-center border-b px-6">
+      <div className="hidden w-64 flex-col border-r bg-sidebar md:flex cyberpunk:bg-black/80 cyberpunk:backdrop-blur-md cyberpunk:border-[#00FF41]/50 relative z-20">
+        <div className="flex h-16 items-center border-b px-6 cyberpunk:border-[#00FF41]/30">
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 text-primary" />
-            <span className="text-lg font-semibold">AI Tracker</span>
+            <TrendingUp className="h-6 w-6 text-primary cyberpunk:text-[#00FF41]" />
+            <span className="text-lg font-semibold cyberpunk:text-white cyberpunk:drop-shadow-[0_0_8px_rgba(0,255,65,0.5)]">AI Tracker</span>
           </div>
         </div>
         <nav className="flex-1 space-y-1 p-4">
-          <div className="text-sm text-muted-foreground">Loading...</div>
+          <div className="text-sm text-muted-foreground cyberpunk:text-[#00FF41]/70">Loading...</div>
         </nav>
       </div>
     }>

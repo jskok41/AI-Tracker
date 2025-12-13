@@ -53,21 +53,25 @@ export function MetricCard({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="text-sm font-medium text-muted-foreground cyberpunk:text-[#00FF41]/70">
           {title}
         </CardTitle>
-        {icon}
+        <div className="cyberpunk:text-[#00FF41]">
+          {icon}
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{formatValue(value)}</div>
+        <div className="text-2xl font-bold cyberpunk:text-white cyberpunk:drop-shadow-[0_0_8px_rgba(0,255,65,0.5)]">
+          {formatValue(value)}
+        </div>
         {change !== undefined && (
           <div className="flex items-center gap-1 text-xs mt-1">
-            <span className={cn('font-medium flex items-center gap-0.5', getTrendColor())}>
+            <span className={cn('font-medium flex items-center gap-0.5', getTrendColor(), 'cyberpunk:text-[#00FF41]')}>
               {getTrendIcon()}
               {change > 0 ? '+' : ''}{change}%
             </span>
             {changeLabel && (
-              <span className="text-muted-foreground">{changeLabel}</span>
+              <span className="text-muted-foreground cyberpunk:text-[#00FF41]/70">{changeLabel}</span>
             )}
           </div>
         )}

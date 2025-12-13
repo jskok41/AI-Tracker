@@ -39,15 +39,15 @@ export function Header() {
   };
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-background px-6">
+    <header className="flex h-16 items-center justify-between border-b bg-background px-6 cyberpunk:bg-black/50 cyberpunk:backdrop-blur-sm cyberpunk:border-[#00FF41]/30">
       {/* Search */}
       <div className="flex flex-1 items-center">
         <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground cyberpunk:text-[#00FF41]/70" />
           <input
             type="search"
             placeholder="Search projects, metrics, agents..."
-            className="h-10 w-full rounded-lg border bg-background pl-10 pr-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-10 w-full rounded-lg border bg-background pl-10 pr-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cyberpunk:bg-black/50 cyberpunk:border-[#00FF41]/30 cyberpunk:text-white cyberpunk:placeholder:text-[#00FF41]/50 cyberpunk:focus-visible:ring-[#00FF41]"
           />
         </div>
       </div>
@@ -60,9 +60,9 @@ export function Header() {
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative cyberpunk:text-[#00FF41] cyberpunk:hover:bg-[#00FF41]/10">
               <Bell className="h-5 w-5" />
-              <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs">
+              <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs cyberpunk:bg-[#00FF41] cyberpunk:text-black">
                 3
               </Badge>
             </Button>
@@ -109,7 +109,7 @@ export function Header() {
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="cyberpunk:text-[#00FF41] cyberpunk:hover:bg-[#00FF41]/10">
               <User className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>

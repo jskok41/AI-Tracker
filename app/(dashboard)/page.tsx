@@ -1,7 +1,6 @@
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { ExpandableProjectList } from '@/components/dashboard/expandable-project-list';
-import { CategoryBreakdown } from '@/components/dashboard/category-breakdown';
-import { StatusBreakdown } from '@/components/dashboard/status-breakdown';
+import { CyberpunkChartsWrapper } from '@/components/dashboard/cyberpunk-charts-wrapper';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatRelativeTime } from '@/lib/utils';
 import { DollarSign, TrendingUp, AlertTriangle, FolderKanban, Target, Users } from 'lucide-react';
@@ -298,8 +297,10 @@ export default async function DashboardPage({
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">AI Benefits Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-bold tracking-tight cyberpunk:text-white cyberpunk:drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]">
+          AI Benefits Dashboard
+        </h1>
+        <p className="text-muted-foreground cyberpunk:text-[#00FF41]/70">
           Track and measure the impact of your AI initiatives
         </p>
       </div>
@@ -331,45 +332,18 @@ export default async function DashboardPage({
       </div>
 
       {/* Charts Row */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Projects by Status</CardTitle>
-            <CardDescription>Current distribution of AI projects with detailed breakdown</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <StatusBreakdown 
-              statuses={data.projectsByStatus.map(status => ({
-                status: status.status,
-                count: status.count,
-                projects: status.projects,
-              }))}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Projects by Category and Sub-Category</CardTitle>
-            <CardDescription>Detailed breakdown of AI initiatives by category and deployment approach</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <CategoryBreakdown 
-              categories={data.projectsByCategory.map(cat => ({
-                category: cat.category,
-                count: cat.count,
-                subCategories: cat.subCategories,
-              }))}
-            />
-          </CardContent>
-        </Card>
-      </div>
+      <CyberpunkChartsWrapper
+        projectsByStatus={data.projectsByStatus}
+        projectsByCategory={data.projectsByCategory}
+      />
 
       {/* Projects List */}
       <div>
         <div className="mb-4">
-          <h2 className="text-2xl font-bold">All Projects</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-2xl font-bold cyberpunk:text-white cyberpunk:drop-shadow-[0_0_8px_rgba(0,255,65,0.5)]">
+            All Projects
+          </h2>
+          <p className="text-sm text-muted-foreground cyberpunk:text-[#00FF41]/70">
             Expand any project to view detailed metrics and progress
           </p>
         </div>
@@ -378,7 +352,7 @@ export default async function DashboardPage({
         ) : (
           <Card>
             <CardContent className="pt-6 text-center">
-              <p className="text-muted-foreground">No projects found. Create your first project to get started.</p>
+              <p className="text-muted-foreground cyberpunk:text-[#00FF41]/70">No projects found. Create your first project to get started.</p>
             </CardContent>
           </Card>
         )}

@@ -84,8 +84,10 @@ export default async function RoadmapPage({
       {/* Enterprise Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Project Roadmap</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-3xl font-bold tracking-tight cyberpunk:text-white cyberpunk:drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]">
+            Project Roadmap
+          </h1>
+          <p className="text-muted-foreground mt-1 cyberpunk:text-[#00FF41]/70">
             Track project phases, milestones, and implementation progress across all projects
           </p>
         </div>

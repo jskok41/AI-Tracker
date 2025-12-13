@@ -116,8 +116,10 @@ export default async function RisksPage({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Risk Management</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight cyberpunk:text-white cyberpunk:drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]">
+            Risk Management
+          </h1>
+          <p className="text-muted-foreground cyberpunk:text-[#00FF41]/70">
             Identify, assess, and mitigate risks across AI projects
           </p>
         </div>
@@ -128,45 +130,45 @@ export default async function RisksPage({
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-muted-foreground cyberpunk:text-[#00FF41]/70">
               Total Risks
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
+            <div className="text-2xl font-bold cyberpunk:text-white cyberpunk:drop-shadow-[0_0_8px_rgba(0,255,65,0.5)]">{stats.total}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-muted-foreground cyberpunk:text-[#00FF41]/70">
               Open Risks
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{stats.openRisks}</div>
+            <div className="text-2xl font-bold text-orange-600 cyberpunk:text-orange-400 cyberpunk:drop-shadow-[0_0_8px_rgba(255,165,0,0.5)]">{stats.openRisks}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-muted-foreground cyberpunk:text-[#00FF41]/70">
               Critical Risks
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.criticalRisks}</div>
+            <div className="text-2xl font-bold text-red-600 cyberpunk:text-red-400 cyberpunk:drop-shadow-[0_0_8px_rgba(255,0,64,0.5)]">{stats.criticalRisks}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-muted-foreground cyberpunk:text-[#00FF41]/70">
               Mitigated
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.mitigated}</div>
+            <div className="text-2xl font-bold text-green-600 cyberpunk:text-[#00FF41] cyberpunk:drop-shadow-[0_0_8px_rgba(0,255,65,0.5)]">{stats.mitigated}</div>
           </CardContent>
         </Card>
       </div>
@@ -192,8 +194,8 @@ export default async function RisksPage({
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'CRITICAL' && r.likelihood === likelihood).length;
               return (
-                <div key={`critical-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/30">
-                  <span className="text-sm font-bold text-red-600 dark:text-red-400">{count || ''}</span>
+                <div key={`critical-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/30 cyberpunk:bg-red-900/30 cyberpunk:border-red-800/50">
+                  <span className="text-sm font-bold text-red-600 dark:text-red-400 cyberpunk:text-red-400 cyberpunk:drop-shadow-[0_0_8px_rgba(255,0,64,0.5)]">{count || ''}</span>
                 </div>
               );
             })}
@@ -203,8 +205,8 @@ export default async function RisksPage({
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'HIGH' && r.likelihood === likelihood).length;
               return (
-                <div key={`high-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800/30">
-                  <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{count || ''}</span>
+                <div key={`high-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800/30 cyberpunk:bg-orange-900/30 cyberpunk:border-orange-800/50">
+                  <span className="text-sm font-bold text-orange-600 dark:text-orange-400 cyberpunk:text-orange-400">{count || ''}</span>
                 </div>
               );
             })}
@@ -214,8 +216,8 @@ export default async function RisksPage({
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'MEDIUM' && r.likelihood === likelihood).length;
               return (
-                <div key={`medium-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800/30">
-                  <span className="text-sm font-bold text-yellow-600 dark:text-yellow-400">{count || ''}</span>
+                <div key={`medium-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800/30 cyberpunk:bg-yellow-900/30 cyberpunk:border-yellow-800/50">
+                  <span className="text-sm font-bold text-yellow-600 dark:text-yellow-400 cyberpunk:text-yellow-400">{count || ''}</span>
                 </div>
               );
             })}
@@ -225,13 +227,13 @@ export default async function RisksPage({
             {[1, 2, 3, 4, 5].map(likelihood => {
               const count = risks.filter(r => r.severity === 'LOW' && r.likelihood === likelihood).length;
               return (
-                <div key={`low-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/30">
-                  <span className="text-sm font-bold text-green-600 dark:text-green-400">{count || ''}</span>
+                <div key={`low-${likelihood}`} className="h-16 rounded border flex items-center justify-center bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800/30 cyberpunk:bg-green-900/30 cyberpunk:border-green-800/50">
+                  <span className="text-sm font-bold text-green-600 dark:text-green-400 cyberpunk:text-[#00FF41]">{count || ''}</span>
                 </div>
               );
             })}
           </div>
-          <div className="mt-4 text-center text-xs text-muted-foreground">
+          <div className="mt-4 text-center text-xs text-muted-foreground cyberpunk:text-[#00FF41]/70">
             Likelihood (1 = Very Unlikely, 5 = Very Likely) →
           </div>
         </CardContent>
@@ -247,9 +249,9 @@ export default async function RisksPage({
       ) : (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No Risks Identified</h3>
-            <p className="text-sm text-muted-foreground text-center max-w-md mb-4">
+            <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4 cyberpunk:text-[#00FF41]/70" />
+            <h3 className="text-lg font-semibold mb-2 cyberpunk:text-white">No Risks Identified</h3>
+            <p className="text-sm text-muted-foreground text-center max-w-md mb-4 cyberpunk:text-[#00FF41]/70">
               Start tracking potential risks by adding risk assessments for your AI projects.
             </p>
             <NewRiskDialog 

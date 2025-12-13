@@ -148,8 +148,10 @@ export default async function PromptsPage({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Prompt Library</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight cyberpunk:text-white cyberpunk:drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]">
+            Prompt Library
+          </h1>
+          <p className="text-muted-foreground cyberpunk:text-[#00FF41]/70">
             Centralized repository of AI prompts for your organization
           </p>
         </div>

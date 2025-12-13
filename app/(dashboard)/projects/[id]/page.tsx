@@ -100,10 +100,12 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
+              <h1 className="text-3xl font-bold tracking-tight cyberpunk:text-white cyberpunk:drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]">
+                {project.name}
+              </h1>
               <StatusBadge status={project.status} />
             </div>
-            <p className="text-muted-foreground">{project.description}</p>
+            <p className="text-muted-foreground cyberpunk:text-[#00FF41]/70">{project.description}</p>
           </div>
           <Badge variant="outline">{project.category.replace(/_/g, ' ')}</Badge>
         </div>

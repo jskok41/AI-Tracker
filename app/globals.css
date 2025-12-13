@@ -113,6 +113,438 @@
   --sidebar-ring: oklch(0.6 0 0);
 }
 
+.cyberpunk {
+  /* Cyberpunk / Sci-Fi Theme - Deep black with neon green accents */
+  --background: #050505;
+  --foreground: #ffffff;
+  --card: rgba(0, 0, 0, 0.4);
+  --card-foreground: #ffffff;
+  --popover: rgba(0, 0, 0, 0.6);
+  --popover-foreground: #ffffff;
+  --primary: #00FF41;
+  --primary-foreground: #050505;
+  --secondary: rgba(0, 255, 65, 0.1);
+  --secondary-foreground: #00FF41;
+  --muted: rgba(0, 255, 65, 0.15);
+  --muted-foreground: rgba(255, 255, 255, 0.7);
+  --accent: rgba(0, 255, 65, 0.2);
+  --accent-foreground: #00FF41;
+  --destructive: #ff0040;
+  --border: rgba(0, 255, 65, 0.3);
+  --input: rgba(0, 255, 65, 0.2);
+  --ring: #00FF41;
+  --chart-1: #00FF41;
+  --chart-2: #00ff88;
+  --chart-3: #00cc33;
+  --chart-4: #66ff99;
+  --chart-5: #33ff66;
+  --sidebar: rgba(0, 0, 0, 0.5);
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #00FF41;
+  --sidebar-primary-foreground: #050505;
+  --sidebar-accent: rgba(0, 255, 65, 0.2);
+  --sidebar-accent-foreground: #00FF41;
+  --sidebar-border: rgba(0, 255, 65, 0.3);
+  --sidebar-ring: #00FF41;
+}
+
+.cyberpunk body {
+  background: var(--background);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism effect for cyberpunk cards */
+.cyberpunk [data-slot="card"] {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 65, 0.3) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.1), inset 0 0 20px rgba(0, 255, 65, 0.05);
+}
+
+.cyberpunk [data-slot="card"]:hover {
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.2), inset 0 0 30px rgba(0, 255, 65, 0.1);
+  border-color: rgba(0, 255, 65, 0.5) !important;
+}
+
+/* Cyberpunk text glow */
+.cyberpunk h1,
+.cyberpunk h2,
+.cyberpunk h3,
+.cyberpunk .font-bold {
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+/* Cyberpunk input styling */
+.cyberpunk input,
+.cyberpunk textarea,
+.cyberpunk select {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border-color: rgba(0, 255, 65, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.cyberpunk input:focus,
+.cyberpunk textarea:focus,
+.cyberpunk select:focus {
+  border-color: #00FF41 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+/* Cyberpunk dropdown menus */
+.cyberpunk [data-slot="dropdown-menu-content"] {
+  background: rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 65, 0.3) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+}
+
+.cyberpunk [data-slot="dropdown-menu-item"] {
+  color: #ffffff !important;
+}
+
+.cyberpunk [data-slot="dropdown-menu-item"]:hover,
+.cyberpunk [data-slot="dropdown-menu-item"]:focus {
+  background: rgba(0, 255, 65, 0.1) !important;
+  color: #00FF41 !important;
+}
+
+.cyberpunk [data-slot="dropdown-menu-label"] {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.cyberpunk [data-slot="dropdown-menu-separator"] {
+  border-color: rgba(0, 255, 65, 0.2) !important;
+}
+
+/* Cyberpunk buttons */
+.cyberpunk [data-slot="button"] {
+  transition: all 0.2s;
+}
+
+.cyberpunk [data-slot="button"]:hover {
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.cyberpunk [data-slot="button"][data-variant="default"] {
+  background: #00FF41 !important;
+  color: #050505 !important;
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+}
+
+.cyberpunk [data-slot="button"][data-variant="default"]:hover {
+  background: #00ff55 !important;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+}
+
+.cyberpunk [data-slot="button"][data-variant="outline"] {
+  border-color: rgba(0, 255, 65, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.cyberpunk [data-slot="button"][data-variant="outline"]:hover {
+  border-color: rgba(0, 255, 65, 0.5) !important;
+  background: rgba(0, 255, 65, 0.1) !important;
+  color: #00FF41 !important;
+}
+
+/* Cyberpunk badges */
+.cyberpunk [data-slot="badge"] {
+  transition: all 0.2s;
+}
+
+.cyberpunk [data-slot="badge"][data-variant="secondary"] {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border-color: rgba(0, 255, 65, 0.3) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.cyberpunk [data-slot="badge"][data-variant="outline"] {
+  border-color: rgba(0, 255, 65, 0.3) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.cyberpunk [data-slot="badge"]:hover {
+  border-color: rgba(0, 255, 65, 0.5) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+}
+
+/* Cyberpunk progress bars */
+.cyberpunk [data-slot="progress"] {
+  background: rgba(0, 255, 65, 0.1) !important;
+  border: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+.cyberpunk [data-slot="progress-indicator"] {
+  background: #00FF41 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+/* Ensure sidebar visibility in cyberpunk mode */
+.cyberpunk .hidden.md\:flex {
+  display: flex !important;
+}
+
+/* Cyberpunk checkbox styling */
+.cyberpunk [data-slot="checkbox"] {
+  border-color: rgba(0, 255, 65, 0.3) !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.cyberpunk [data-slot="checkbox"][data-state="checked"] {
+  background: #00FF41 !important;
+  border-color: #00FF41 !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+}
+
+.cyberpunk [data-slot="checkbox-indicator"] {
+  color: #050505 !important;
+}
+
+/* Cyberpunk collapsible content */
+.cyberpunk [data-slot="collapsible-content"] {
+  color: #ffffff;
+}
+
+/* Ensure text contrast in cyberpunk mode */
+.cyberpunk .text-foreground {
+  color: #ffffff !important;
+}
+
+.cyberpunk .text-muted-foreground {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Force override category background colors in Cyberpunk mode */
+.cyberpunk .bg-blue-50,
+.cyberpunk .bg-purple-50,
+.cyberpunk .bg-green-50,
+.cyberpunk .bg-orange-50,
+.cyberpunk .bg-red-50,
+.cyberpunk .bg-gray-50,
+.cyberpunk .bg-yellow-50,
+.cyberpunk .bg-emerald-50,
+.cyberpunk .bg-indigo-50,
+.cyberpunk .bg-teal-50 {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Force override dark mode category backgrounds in Cyberpunk mode */
+.cyberpunk .dark\:bg-blue-900\/20,
+.cyberpunk .dark\:bg-purple-900\/20,
+.cyberpunk .dark\:bg-green-900\/20,
+.cyberpunk .dark\:bg-orange-900\/20,
+.cyberpunk .dark\:bg-red-900\/20,
+.cyberpunk .dark\:bg-gray-900\/20 {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Force override ALL background colors in project list items - comprehensive approach */
+.cyberpunk .cyberpunk-project-list > div {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  background-image: none !important;
+}
+
+.cyberpunk .cyberpunk-project-list > div > button > div {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Override any category-specific background classes within project list */
+.cyberpunk .cyberpunk-project-list .bg-blue-50,
+.cyberpunk .cyberpunk-project-list .bg-purple-50,
+.cyberpunk .cyberpunk-project-list .bg-green-50,
+.cyberpunk .cyberpunk-project-list .bg-orange-50,
+.cyberpunk .cyberpunk-project-list .bg-red-50,
+.cyberpunk .cyberpunk-project-list .bg-gray-50,
+.cyberpunk .cyberpunk-project-list .dark\:bg-blue-900\/20,
+.cyberpunk .cyberpunk-project-list .dark\:bg-purple-900\/20,
+.cyberpunk .cyberpunk-project-list .dark\:bg-green-900\/20,
+.cyberpunk .cyberpunk-project-list .dark\:bg-orange-900\/20,
+.cyberpunk .cyberpunk-project-list .dark\:bg-red-900\/20,
+.cyberpunk .cyberpunk-project-list .dark\:bg-gray-900\/20 {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Force override category border colors in Cyberpunk mode */
+.cyberpunk .border-blue-200,
+.cyberpunk .border-purple-200,
+.cyberpunk .border-green-200,
+.cyberpunk .border-orange-200,
+.cyberpunk .border-red-200,
+.cyberpunk .border-gray-200,
+.cyberpunk .dark\:border-blue-800\/30,
+.cyberpunk .dark\:border-purple-800\/30,
+.cyberpunk .dark\:border-green-800\/30,
+.cyberpunk .dark\:border-orange-800\/30,
+.cyberpunk .dark\:border-red-800\/30,
+.cyberpunk .dark\:border-gray-800\/30 {
+  border-color: rgba(0, 255, 65, 0.3) !important;
+}
+
+/* Force override category text colors in Cyberpunk mode */
+.cyberpunk .text-blue-700,
+.cyberpunk .text-purple-700,
+.cyberpunk .text-green-700,
+.cyberpunk .text-orange-700,
+.cyberpunk .text-red-700,
+.cyberpunk .text-gray-700,
+.cyberpunk .dark\:text-blue-300,
+.cyberpunk .dark\:text-purple-300,
+.cyberpunk .dark\:text-green-300,
+.cyberpunk .dark\:text-orange-300,
+.cyberpunk .dark\:text-red-300,
+.cyberpunk .dark\:text-gray-300 {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Force override hover states for category backgrounds */
+.cyberpunk .hover\:bg-blue-200:hover,
+.cyberpunk .hover\:bg-purple-200:hover,
+.cyberpunk .hover\:bg-green-200:hover,
+.cyberpunk .hover\:bg-orange-200:hover,
+.cyberpunk .hover\:bg-red-200:hover,
+.cyberpunk .hover\:bg-gray-200:hover,
+.cyberpunk .dark\:hover\:bg-blue-900\/40:hover,
+.cyberpunk .dark\:hover\:bg-purple-900\/40:hover,
+.cyberpunk .dark\:hover\:bg-green-900\/40:hover,
+.cyberpunk .dark\:hover\:bg-orange-900\/40:hover,
+.cyberpunk .dark\:hover\:bg-red-900\/40:hover,
+.cyberpunk .dark\:hover\:bg-gray-900\/40:hover {
+  background-color: rgba(0, 255, 65, 0.05) !important;
+}
+
+/* Override badge background colors in Cyberpunk mode */
+.cyberpunk .bg-blue-100,
+.cyberpunk .bg-purple-100,
+.cyberpunk .bg-green-100,
+.cyberpunk .bg-orange-100,
+.cyberpunk .bg-red-100,
+.cyberpunk .bg-gray-100,
+.cyberpunk .bg-yellow-100,
+.cyberpunk .bg-emerald-100,
+.cyberpunk .bg-indigo-100,
+.cyberpunk .bg-teal-100 {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Override badge text colors in Cyberpunk mode */
+.cyberpunk .text-blue-800,
+.cyberpunk .text-purple-800,
+.cyberpunk .text-green-800,
+.cyberpunk .text-orange-800,
+.cyberpunk .text-red-800,
+.cyberpunk .text-gray-800 {
+  color: #00FF41 !important;
+}
+
+/* Override badge border colors in Cyberpunk mode */
+.cyberpunk .border-blue-300,
+.cyberpunk .border-purple-300,
+.cyberpunk .border-green-300,
+.cyberpunk .border-orange-300,
+.cyberpunk .border-red-300,
+.cyberpunk .border-gray-300,
+.cyberpunk .dark\:border-blue-800\/40,
+.cyberpunk .dark\:border-purple-800\/40,
+.cyberpunk .dark\:border-green-800\/40,
+.cyberpunk .dark\:border-orange-800\/40,
+.cyberpunk .dark\:border-red-800\/40,
+.cyberpunk .dark\:border-gray-800\/40 {
+  border-color: rgba(0, 255, 65, 0.5) !important;
+}
+
+/* Force all colored dots to neon green in Cyberpunk mode */
+.cyberpunk .bg-blue-500,
+.cyberpunk .bg-purple-500,
+.cyberpunk .bg-green-500,
+.cyberpunk .bg-orange-500,
+.cyberpunk .bg-red-500,
+.cyberpunk .bg-gray-500,
+.cyberpunk .bg-yellow-500,
+.cyberpunk .bg-emerald-500,
+.cyberpunk .bg-indigo-500,
+.cyberpunk .bg-teal-500,
+.cyberpunk .dark\:bg-blue-400,
+.cyberpunk .dark\:bg-purple-400,
+.cyberpunk .dark\:bg-green-400,
+.cyberpunk .dark\:bg-orange-400,
+.cyberpunk .dark\:bg-red-400,
+.cyberpunk .dark\:bg-gray-400 {
+  background-color: #00FF41 !important;
+  box-shadow: 0 0 4px rgba(0, 255, 65, 0.5) !important;
+}
+
+/* Comprehensive override for project list items in Cyberpunk mode */
+.cyberpunk [data-slot="collapsible-trigger"] {
+  background-color: transparent !important;
+}
+
+.cyberpunk [data-slot="collapsible-trigger"]:hover {
+  background-color: rgba(0, 255, 65, 0.05) !important;
+}
+
+/* Ensure project names have strong neon green glow */
+.cyberpunk h3.font-semibold,
+.cyberpunk .cyberpunk-project-list h3 {
+  color: #00FF41 !important;
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.8), 0 0 16px rgba(0, 255, 65, 0.4) !important;
+  font-weight: 700 !important;
+}
+
+/* Override category text colors specifically in project list */
+.cyberpunk .cyberpunk-project-list .text-blue-700,
+.cyberpunk .cyberpunk-project-list .text-purple-700,
+.cyberpunk .cyberpunk-project-list .text-green-700,
+.cyberpunk .cyberpunk-project-list .text-orange-700,
+.cyberpunk .cyberpunk-project-list .text-red-700,
+.cyberpunk .cyberpunk-project-list .text-gray-700,
+.cyberpunk .cyberpunk-project-list .dark\:text-blue-300,
+.cyberpunk .cyberpunk-project-list .dark\:text-purple-300,
+.cyberpunk .cyberpunk-project-list .dark\:text-green-300,
+.cyberpunk .cyberpunk-project-list .dark\:text-orange-300,
+.cyberpunk .cyberpunk-project-list .dark\:text-red-300,
+.cyberpunk .cyberpunk-project-list .dark\:text-gray-300 {
+  color: #00FF41 !important;
+}
+
+/* Target project list container directly */
+.cyberpunk .cyberpunk-project-list > div {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 65, 0.3) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.1) !important;
+}
+
+.cyberpunk .cyberpunk-project-list > div:hover {
+  border-color: rgba(0, 255, 65, 0.5) !important;
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.2) !important;
+}
+
+/* Override any nested background colors in project cards */
+.cyberpunk .cyberpunk-project-list > div > div {
+  background-color: transparent !important;
+}
+
+.cyberpunk .cyberpunk-project-list > div > div:hover {
+  background-color: rgba(0, 255, 65, 0.05) !important;
+}
+
+/* Force project card header backgrounds to be transparent */
+.cyberpunk .cyberpunk-project-list > div > div > button > div {
+  background-color: transparent !important;
+}
+
+.cyberpunk .cyberpunk-project-list > div > div > button > div:hover {
+  background-color: rgba(0, 255, 65, 0.05) !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

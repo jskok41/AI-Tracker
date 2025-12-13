@@ -35,6 +35,7 @@ export default function RootLayout({
           defaultTheme="light"
           enableSystem={false}
           disableTransitionOnChange
+          themes={['light', 'dark', 'cyberpunk']}
         >
           <AuthProvider>
             {children}

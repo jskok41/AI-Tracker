@@ -15,7 +15,8 @@ export function StatusBadge({ status, label }: StatusBadgeProps) {
       variant="secondary"
       className={cn(
         'capitalize',
-        getStatusColor(status)
+        getStatusColor(status),
+        'cyberpunk:bg-black/50 cyberpunk:border-[#00FF41]/50 cyberpunk:text-[#00FF41] cyberpunk:shadow-[0_0_8px_rgba(0,255,65,0.3)]'
       )}
     >
       {displayLabel}

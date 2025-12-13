@@ -105,8 +105,10 @@ export default async function ProjectsPage({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">AI Projects</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight cyberpunk:text-white cyberpunk:drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]">
+            AI Projects
+          </h1>
+          <p className="text-muted-foreground cyberpunk:text-[#00FF41]/70">
             Manage and track all your AI initiatives
           </p>
         </div>
@@ -121,10 +123,10 @@ export default async function ProjectsPage({
           users={users} 
         />
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center cyberpunk:border-[#00FF41]/30 cyberpunk:bg-black/20">
           <div className="mx-auto max-w-md space-y-3">
-            <h3 className="text-lg font-semibold">No projects yet</h3>
-            <p className="text-sm text-muted-foreground">
+            <h3 className="text-lg font-semibold cyberpunk:text-white">No projects yet</h3>
+            <p className="text-sm text-muted-foreground cyberpunk:text-[#00FF41]/70">
               Get started by creating your first AI project to track its benefits and ROI.
             </p>
             <NewProjectDialog departments={departments} users={users} />
