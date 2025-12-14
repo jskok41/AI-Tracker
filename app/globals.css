@@ -545,6 +545,41 @@
   background-color: rgba(0, 255, 65, 0.05) !important;
 }
 
+/* Cyberpunk Recharts Tooltip - Unexpected bright background solution */
+.cyberpunk .recharts-tooltip-wrapper,
+.cyberpunk .recharts-tooltip-wrapper * {
+  background-color: #F0FFF0 !important;
+  border: 2px solid #00FF41 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.8), 0 0 40px rgba(0, 255, 65, 0.4), inset 0 0 10px rgba(0, 255, 65, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  animation: cyberpunk-tooltip-pulse 2s ease-in-out infinite !important;
+}
+
+.cyberpunk .recharts-tooltip-label,
+.cyberpunk .recharts-tooltip-item-label,
+.cyberpunk .recharts-tooltip-item-value {
+  color: #00AA00 !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.6) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.cyberpunk .recharts-tooltip-item-value {
+  color: #005500 !important;
+  font-weight: 900 !important;
+}
+
+@keyframes cyberpunk-tooltip-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.8), 0 0 40px rgba(0, 255, 65, 0.4), inset 0 0 10px rgba(0, 255, 65, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 255, 65, 1), 0 0 60px rgba(0, 255, 65, 0.6), inset 0 0 15px rgba(0, 255, 65, 0.2);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

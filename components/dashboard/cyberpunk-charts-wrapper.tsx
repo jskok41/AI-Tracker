@@ -39,7 +39,7 @@ export function CyberpunkChartsWrapper({
           <CardHeader>
             <CardTitle className="text-white">Projects by Status</CardTitle>
             <CardDescription className="text-[#00FF41]/70">
-              Current distribution of AI projects
+              Current distribution of AI projects with Department & Team breakdown
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -47,6 +47,7 @@ export function CyberpunkChartsWrapper({
               statuses={projectsByStatus.map(status => ({
                 status: status.status,
                 count: status.count,
+                projects: status.projects,
               }))}
             />
           </CardContent>
@@ -56,7 +57,7 @@ export function CyberpunkChartsWrapper({
           <CardHeader>
             <CardTitle className="text-white">Projects by Category</CardTitle>
             <CardDescription className="text-[#00FF41]/70">
-              Neural network visualization of AI initiatives
+              Neural network visualization with Department & Team breakdown
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -64,6 +65,7 @@ export function CyberpunkChartsWrapper({
               categories={projectsByCategory.map(cat => ({
                 category: cat.category,
                 count: cat.count,
+                subCategories: cat.subCategories,
               }))}
             />
           </CardContent>

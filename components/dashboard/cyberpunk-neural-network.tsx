@@ -1,12 +1,17 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface NeuralNetworkProps {
   categories: Array<{
     category: string;
     count: number;
+    subCategories?: Array<{
+      subCategory: string;
+      count: number;
+    }>;
   }>;
   className?: string;
 }
@@ -14,14 +19,27 @@ interface NeuralNetworkProps {
 export function CyberpunkNeuralNetwork({ categories, className }: NeuralNetworkProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(category)) {
+        next.delete(category);
+      } else {
+        next.add(category);
+      }
+      return next;
+    });
+  };
+
+    useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
         setDimensions({
           width: containerRef.current.offsetWidth,
-          height: 300,
+          height: 200, // Reduced height for better balance
         });
       }
     };
@@ -175,9 +193,14 @@ export function CyberpunkNeuralNetwork({ categories, className }: NeuralNetworkP
     };
   }, [dimensions, categories]);
 
+  // Sort categories by count
+  const sortedCategories = [...categories].sort((a, b) => b.count - a.count);
+  const total = categories.reduce((sum, cat) => sum + cat.count, 0);
+
   return (
-    <div className={cn('space-y-4', className)}>
-      <div ref={containerRef} className="relative w-full">
+    <div className={cn('space-y-3', className)}>
+      {/* Neural Network Visualization - Reduced height for better balance */}
+      <div ref={containerRef} className="relative w-full" style={{ height: '200px' }}>
         <canvas
           ref={canvasRef}
           className="w-full"
@@ -185,30 +208,80 @@ export function CyberpunkNeuralNetwork({ categories, className }: NeuralNetworkP
         />
       </div>
       
-      {/* Category List */}
-      <div className="space-y-2">
-        {categories.map((category) => {
-          const total = categories.reduce((sum, cat) => sum + cat.count, 0);
+      {/* Category List with Expandable Breakdown */}
+      <div className="space-y-1.5">
+        {sortedCategories.map((category) => {
           const percentage = total > 0 ? ((category.count / total) * 100).toFixed(1) : '0';
+          const subCategories = category.subCategories || [];
+          const hasSubCategories = subCategories.length > 0;
+          const isExpanded = expandedCategories.has(category.category);
           
           return (
-            <div key={category.category} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div 
-                  className="h-2 w-2 rounded-full"
-                  style={{ 
-                    backgroundColor: '#00FF41',
-                    boxShadow: '0 0 8px #00FF41',
-                  }}
-                />
-                <span className="text-sm capitalize text-white">
-                  {category.category.toLowerCase().replace(/_/g, ' ')}
-                </span>
+            <div key={category.category} className="space-y-1">
+              {/* Category Row */}
+              <div 
+                className={cn(
+                  "flex items-center justify-between group",
+                  hasSubCategories && "cursor-pointer hover:bg-[#00FF41]/5 rounded px-1 py-0.5 transition-colors"
+                )}
+                onClick={() => hasSubCategories && toggleCategory(category.category)}
+              >
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  {hasSubCategories && (
+                    <div className="flex-shrink-0">
+                      {isExpanded ? (
+                        <ChevronDown className="h-3.5 w-3.5 text-[#00FF41]/70" />
+                      ) : (
+                        <ChevronRight className="h-3.5 w-3.5 text-[#00FF41]/70" />
+                      )}
+                    </div>
+                  )}
+                  <div 
+                    className="h-2 w-2 rounded-full flex-shrink-0"
+                    style={{ 
+                      backgroundColor: '#00FF41',
+                      boxShadow: '0 0 8px #00FF41',
+                    }}
+                  />
+                  <span className="text-sm capitalize text-white">
+                    {category.category.toLowerCase().replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-xs text-[#00FF41]/70">{percentage}%</span>
+                  <span className="text-sm font-medium text-white">{category.count}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-[#00FF41]/70">{percentage}%</span>
-                <span className="text-sm font-medium text-white">{category.count}</span>
-              </div>
+              
+              {/* Department & Team Breakdown */}
+              {hasSubCategories && isExpanded && (
+                <div className="ml-6 space-y-1 border-l border-[#00FF41]/20 pl-3">
+                  {subCategories
+                    .sort((a, b) => b.count - a.count)
+                    .map((subCategory) => {
+                      const subPercentage = category.count > 0 ? ((subCategory.count / category.count) * 100).toFixed(1) : '0';
+                      return (
+                        <div
+                          key={subCategory.subCategory}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <div className="h-1.5 w-1.5 rounded-full bg-[#00FF41]/60 flex-shrink-0" />
+                            <span className="text-xs text-[#00FF41]/80 truncate">
+                              {subCategory.subCategory || 'Unspecified'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <span className="text-xs text-[#00FF41]/60">{subPercentage}%</span>
+                            <span className="text-xs font-medium text-white">
+                              {subCategory.count}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
             </div>
           );
         })}
