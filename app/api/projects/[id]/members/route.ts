@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { canAssignProjectMembers } from '@/lib/permissions';
+import { logActivity } from '@/lib/services/activity-logger';
 
 // Get project members
 export async function GET(
@@ -134,6 +135,21 @@ export async function POST(
       },
     });
 
+    // Log activity
+    if (session?.user?.id) {
+      await logActivity({
+        type: 'PROJECT_MEMBER_ADDED',
+        userId: session.user.id,
+        projectId,
+        title: `Member added to project`,
+        description: `${projectMember.user.name} was added as a member`,
+        metadata: {
+          addedUserId: userId,
+          addedUserName: projectMember.user.name,
+        },
+      });
+    }
+
     return NextResponse.json(projectMember, { status: 201 });
   } catch (error: any) {
     console.error('Error adding project member:', error);
@@ -182,6 +198,23 @@ export async function DELETE(
       );
     }
 
+    // Get user details before deletion
+    const projectMember = await prisma.projectMember.findUnique({
+      where: {
+        projectId_userId: {
+          projectId,
+          userId,
+        },
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
     // Delete project member
     await prisma.projectMember.delete({
       where: {
@@ -191,6 +224,21 @@ export async function DELETE(
         },
       },
     });
+
+    // Log activity
+    if (session?.user?.id && projectMember) {
+      await logActivity({
+        type: 'PROJECT_MEMBER_REMOVED',
+        userId: session.user.id,
+        projectId,
+        title: `Member removed from project`,
+        description: `${projectMember.user.name} was removed as a member`,
+        metadata: {
+          removedUserId: userId,
+          removedUserName: projectMember.user.name,
+        },
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

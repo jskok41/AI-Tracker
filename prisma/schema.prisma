@@ -120,6 +120,7 @@ model User {
   department         Department?      @relation(fields: [departmentId], references: [id], onDelete: SetNull)
   ownedProjects      AIProject[]      @relation("ProjectOwner")
   projectMemberships ProjectMember[]
+  activities         Activity[]
   feedback           UserFeedback[]
   promptsCreated     PromptLibrary[]
   risksOwned         RiskAssessment[]
@@ -218,6 +219,7 @@ model AIProject {
   alerts            Alert[]
   phases            Phase[]
   members           ProjectMember[]
+  activities        Activity[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -542,4 +544,46 @@ model ProjectMember {
   @@unique([projectId, userId])
   @@index([projectId])
   @@index([userId])
+}
+
+// ============================================================================
+// ACTIVITY TRACKING
+// ============================================================================
+
+enum ActivityType {
+  PROJECT_CREATED
+  PROJECT_UPDATED
+  PROJECT_DELETED
+  PROJECT_STATUS_CHANGED
+  PROMPT_CREATED
+  PROMPT_UPDATED
+  PROMPT_DELETED
+  RISK_CREATED
+  RISK_UPDATED
+  RISK_DELETED
+  USER_ROLE_CHANGED
+  PROJECT_MEMBER_ADDED
+  PROJECT_MEMBER_REMOVED
+  METRIC_ADDED
+  ROI_CALCULATED
+  MILESTONE_COMPLETED
+  PHASE_UPDATED
+}
+
+model Activity {
+  id          String       @id @default(uuid())
+  type        ActivityType
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     AIProject?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  title       String
+  description String?
+  metadata    String? // JSON stored as string for additional context
+  createdAt   DateTime     @default(now())
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([createdAt])
+  @@index([type])
 }

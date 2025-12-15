@@ -132,10 +132,18 @@ export default async function SettingsPage() {
   }));
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
+    <div className="flex flex-col gap-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight cyberpunk:text-white cyberpunk:drop-shadow-[0_0_10px_rgba(0,255,65,0.5)]">
+          Settings
+        </h1>
+        <p className="text-muted-foreground cyberpunk:text-[#00FF41]/70">
+          Manage user access control and project member assignments
+        </p>
       </div>
+
+      {/* Settings Content */}
       <Suspense fallback={<div>Loading settings...</div>}>
         <SettingsPageClient
           currentUser={{

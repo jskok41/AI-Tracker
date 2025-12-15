@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { isAdmin } from '@/lib/permissions';
+import { logActivity } from '@/lib/services/activity-logger';
 
 // Get all users (Admin only)
 export async function GET(request: NextRequest) {
@@ -92,6 +93,12 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // Get user details before update
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true, role: true },
+    });
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { role },
@@ -115,6 +122,22 @@ export async function PATCH(request: NextRequest) {
         },
       },
     });
+
+    // Log activity
+    if (existingUser) {
+      await logActivity({
+        type: 'USER_ROLE_CHANGED',
+        userId: session.user.id,
+        title: `User role changed for ${existingUser.name}`,
+        description: `Role changed from ${existingUser.role || 'GUEST'} to ${role}`,
+        metadata: {
+          targetUserId: userId,
+          targetUserName: existingUser.name,
+          oldRole: existingUser.role || 'GUEST',
+          newRole: role,
+        },
+      });
+    }
 
     return NextResponse.json(updatedUser);
   } catch (error) {

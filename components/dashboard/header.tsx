@@ -31,7 +31,7 @@ export function Header() {
   };
 
   const handleSettingsClick = () => {
-    toast.info('Settings page coming soon');
+    router.push('/settings');
   };
 
   const handleHelpClick = () => {

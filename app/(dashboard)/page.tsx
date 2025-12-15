@@ -1,10 +1,13 @@
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { ExpandableProjectList } from '@/components/dashboard/expandable-project-list';
 import { CyberpunkChartsWrapper } from '@/components/dashboard/cyberpunk-charts-wrapper';
+import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatRelativeTime } from '@/lib/utils';
 import { DollarSign, TrendingUp, AlertTriangle, FolderKanban, Target, Users } from 'lucide-react';
 import prisma from '@/lib/db';
+import { auth } from '@/lib/auth';
+import { getRecentActivities } from '@/lib/services/activity-logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -292,6 +295,26 @@ export default async function DashboardPage({
     : undefined;
   
   const data = await getDashboardData(departmentIds);
+  
+  // Check if user is admin for Recent Activity view
+  const session = await auth();
+  const isAdmin = session?.user?.role === 'ADMIN';
+  
+  // Fetch recent activities for admin users
+  let recentActivities: any[] = [];
+  if (isAdmin) {
+    try {
+      recentActivities = await getRecentActivities(20);
+      // Ensure createdAt is a Date object for the component
+      recentActivities = recentActivities.map(activity => ({
+        ...activity,
+        createdAt: activity.createdAt instanceof Date ? activity.createdAt : new Date(activity.createdAt),
+      }));
+    } catch (error) {
+      console.error('Error fetching recent activities:', error);
+      recentActivities = [];
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -358,52 +381,12 @@ export default async function DashboardPage({
         )}
       </div>
 
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>Latest updates from your AI projects</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {data.recentAlerts.length > 0 ? (
-              data.recentAlerts.map((alert) => (
-                <div key={alert.id} className="flex items-start gap-4 border-b pb-4 last:border-0 last:pb-0">
-                  <div className={`mt-1 rounded-full p-2 ${
-                    alert.severity === 'CRITICAL' ? 'bg-red-100 dark:bg-red-900/30' :
-                    alert.severity === 'WARNING' ? 'bg-yellow-100 dark:bg-yellow-900/30' :
-                    alert.severity === 'ERROR' ? 'bg-orange-100 dark:bg-orange-900/30' :
-                    'bg-blue-100 dark:bg-blue-900/30'
-                  }`}>
-                    <AlertTriangle className={`h-4 w-4 ${
-                      alert.severity === 'CRITICAL' ? 'text-red-600 dark:text-red-400' :
-                      alert.severity === 'WARNING' ? 'text-yellow-600 dark:text-yellow-400' :
-                      alert.severity === 'ERROR' ? 'text-orange-600 dark:text-orange-400' :
-                      'text-blue-600 dark:text-blue-400'
-                    }`} />
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium">{alert.alertTitle}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatRelativeTime(alert.triggeredAt)}
-                      </p>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{alert.alertMessage}</p>
-                    {alert.project && (
-                      <p className="text-xs text-muted-foreground">
-                        Project: {alert.project.name}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">No recent activity</p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Recent Activity - Admin Only */}
+      {isAdmin && (
+        <div>
+          <RecentActivity activities={recentActivities} />
+        </div>
+      )}
     </div>
   );
 }

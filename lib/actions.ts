@@ -4,6 +4,8 @@ import prisma from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { ProjectStatus } from '@prisma/client';
+import { logActivity } from '@/lib/services/activity-logger';
+import { auth } from '@/lib/auth';
 
 // Validation schemas
 const projectSchema = z.object({
@@ -91,6 +93,18 @@ export async function createProject(formData: FormData) {
       },
     });
 
+    // Log activity
+    const session = await auth();
+    if (session?.user?.id) {
+      await logActivity({
+        type: 'PROJECT_CREATED',
+        userId: session.user.id,
+        projectId: project.id,
+        title: `Project "${project.name}" created`,
+        description: `New project created in ${project.category} category`,
+      });
+    }
+
     revalidatePath('/projects');
     return { success: true, data: project, projectId: project.id };
   } catch (error) {
@@ -133,6 +147,18 @@ export async function createPrompt(formData: FormData) {
       },
     });
 
+    // Log activity
+    const session = await auth();
+    if (session?.user?.id) {
+      await logActivity({
+        type: 'PROMPT_CREATED',
+        userId: session.user.id,
+        projectId: validated.projectId || undefined,
+        title: `Prompt "${validated.title}" created`,
+        description: `New prompt added to ${validated.category} category`,
+      });
+    }
+
     revalidatePath('/prompts');
     return { success: true, data: prompt };
   } catch (error) {
@@ -174,6 +200,18 @@ export async function createRisk(formData: FormData) {
         identifiedDate: new Date(),
       },
     });
+
+    // Log activity
+    const session = await auth();
+    if (session?.user?.id) {
+      await logActivity({
+        type: 'RISK_CREATED',
+        userId: session.user.id,
+        projectId: validated.projectId,
+        title: `Risk "${validated.riskTitle}" created`,
+        description: `${validated.severity} severity risk identified`,
+      });
+    }
 
     revalidatePath('/risks');
     return { success: true, data: risk };
@@ -248,10 +286,28 @@ export async function updateProject(id: string, formData: FormData) {
 
     const validated = projectSchema.parse(data);
 
+    // Get project name before update for activity log
+    const existingProject = await prisma.aIProject.findUnique({
+      where: { id },
+      select: { name: true },
+    });
+
     const project = await prisma.aIProject.update({
       where: { id },
       data: validated,
     });
+
+    // Log activity
+    const session = await auth();
+    if (session?.user?.id) {
+      await logActivity({
+        type: 'PROJECT_UPDATED',
+        userId: session.user.id,
+        projectId: project.id,
+        title: `Project "${project.name}" updated`,
+        description: `Project details were modified`,
+      });
+    }
 
     revalidatePath('/projects');
     revalidatePath(`/projects/${id}`);
@@ -273,10 +329,29 @@ export async function updateProjectStatus(projectId: string, status: ProjectStat
   }
 
   try {
+    // Get project name before update
+    const existingProject = await prisma.aIProject.findUnique({
+      where: { id: projectId },
+      select: { name: true, status: true },
+    });
+
     const project = await prisma.aIProject.update({
       where: { id: projectId },
       data: { status },
     });
+
+    // Log activity
+    const session = await auth();
+    if (session?.user?.id && existingProject) {
+      await logActivity({
+        type: 'PROJECT_STATUS_CHANGED',
+        userId: session.user.id,
+        projectId: project.id,
+        title: `Project "${project.name}" status changed`,
+        description: `Status changed from ${existingProject.status} to ${status}`,
+        metadata: { oldStatus: existingProject.status, newStatus: status },
+      });
+    }
 
     revalidatePath('/projects');
     revalidatePath(`/projects/${projectId}`);
@@ -357,6 +432,18 @@ export async function updateRisk(id: string, formData: FormData) {
       data: validated,
     });
 
+    // Log activity
+    const session = await auth();
+    if (session?.user?.id) {
+      await logActivity({
+        type: 'RISK_UPDATED',
+        userId: session.user.id,
+        projectId: validated.projectId,
+        title: `Risk "${validated.riskTitle}" updated`,
+        description: `Risk details were modified`,
+      });
+    }
+
     revalidatePath('/risks');
     return { success: true, data: risk };
   } catch (error) {
@@ -379,9 +466,26 @@ export async function deleteProject(id: string) {
   }
 
   try {
+    // Get project name before deletion for activity log
+    const project = await prisma.aIProject.findUnique({
+      where: { id },
+      select: { name: true },
+    });
+
     await prisma.aIProject.delete({
       where: { id },
     });
+
+    // Log activity
+    const session = await auth();
+    if (session?.user?.id && project) {
+      await logActivity({
+        type: 'PROJECT_DELETED',
+        userId: session.user.id,
+        title: `Project "${project.name}" deleted`,
+        description: `Project was permanently removed`,
+      });
+    }
 
     revalidatePath('/projects');
     return { success: true };
@@ -405,9 +509,27 @@ export async function deletePrompt(id: string) {
 
 export async function deleteRisk(id: string) {
   try {
+    // Get risk details before deletion
+    const risk = await prisma.riskAssessment.findUnique({
+      where: { id },
+      select: { riskTitle: true, projectId: true },
+    });
+
     await prisma.riskAssessment.delete({
       where: { id },
     });
+
+    // Log activity
+    const session = await auth();
+    if (session?.user?.id && risk) {
+      await logActivity({
+        type: 'RISK_DELETED',
+        userId: session.user.id,
+        projectId: risk.projectId,
+        title: `Risk "${risk.riskTitle}" deleted`,
+        description: `Risk assessment was permanently removed`,
+      });
+    }
 
     revalidatePath('/risks');
     return { success: true };
