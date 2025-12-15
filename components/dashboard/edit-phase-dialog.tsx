@@ -95,7 +95,7 @@ export function EditPhaseDialog({ phase, open, onOpenChange }: EditPhaseDialogPr
                   <SelectItem value="NOT_STARTED">Not Started</SelectItem>
                   <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
                   <SelectItem value="COMPLETED">Completed</SelectItem>
-                  <SelectItem value="BLOCKED">Blocked</SelectItem>
+                  <SelectItem value="DELAYED">Delayed</SelectItem>
                 </SelectContent>
               </Select>
             </div>

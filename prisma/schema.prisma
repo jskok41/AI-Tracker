@@ -90,37 +90,37 @@ enum PhaseStatus {
 // ============================================================================
 
 model Department {
-  id                String       @id @default(uuid())
-  name              String
-  description       String?
+  id                 String       @id @default(uuid())
+  name               String
+  description        String?
   parentDepartmentId String?
-  parentDepartment  Department?  @relation("DepartmentHierarchy", fields: [parentDepartmentId], references: [id], onDelete: SetNull)
-  childDepartments  Department[] @relation("DepartmentHierarchy")
-  projects          AIProject[]
-  users             User[]
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  parentDepartment   Department?  @relation("DepartmentHierarchy", fields: [parentDepartmentId], references: [id], onDelete: SetNull)
+  childDepartments   Department[] @relation("DepartmentHierarchy")
+  projects           AIProject[]
+  users              User[]
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 }
 
 model User {
-  id                    String            @id @default(uuid())
-  email                 String            @unique
-  name                  String
-  password              String?           // Hashed password
-  role                  String?
-  emailVerified         DateTime?
-  image                 String?
-  departmentId          String?
-  department            Department?       @relation(fields: [departmentId], references: [id], onDelete: SetNull)
-  ownedProjects         AIProject[]       @relation("ProjectOwner")
-  feedback              UserFeedback[]
-  promptsCreated        PromptLibrary[]
-  risksOwned            RiskAssessment[]
-  alertsAcknowledged    Alert[]
-  accounts              Account[]
-  sessions              Session[]
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
+  id                 String           @id @default(uuid())
+  email              String           @unique
+  name               String
+  password           String? // Hashed password
+  role               String?
+  emailVerified      DateTime?
+  image              String?
+  departmentId       String?
+  department         Department?      @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  ownedProjects      AIProject[]      @relation("ProjectOwner")
+  feedback           UserFeedback[]
+  promptsCreated     PromptLibrary[]
+  risksOwned         RiskAssessment[]
+  alertsAcknowledged Alert[]
+  accounts           Account[]
+  sessions           Session[]
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
 }
 
 // NextAuth.js Models
@@ -170,49 +170,49 @@ model PasswordResetToken {
 }
 
 model AIProject {
-  id                      String               @id @default(uuid())
-  name                    String
-  description             String?
-  category                ProjectCategory
-  status                  ProjectStatus        @default(PLANNING)
-  departmentId            String?
-  department              Department?          @relation(fields: [departmentId], references: [id], onDelete: SetNull)
-  ownerId                 String
-  owner                   User                 @relation("ProjectOwner", fields: [ownerId], references: [id])
-  startDate               DateTime?
-  targetCompletionDate    DateTime?
-  actualCompletionDate    DateTime?
-  budgetAllocated         Float?
-  budgetSpent             Float?
-  expectedRoiPercentage   Float?
-  strategicPriority       Int?                 // 1-5 scale
-  
+  id                    String          @id @default(uuid())
+  name                  String
+  description           String?
+  category              ProjectCategory
+  status                ProjectStatus   @default(PLANNING)
+  departmentId          String?
+  department            Department?     @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  ownerId               String
+  owner                 User            @relation("ProjectOwner", fields: [ownerId], references: [id])
+  startDate             DateTime?
+  targetCompletionDate  DateTime?
+  actualCompletionDate  DateTime?
+  budgetAllocated       Float?
+  budgetSpent           Float?
+  expectedRoiPercentage Float?
+  strategicPriority     Int? // 1-5 scale
+
   // Key Highlight Remarks
-  team                    String?              // Department & team (TEST/MDW, line/tool/module)
-  ownerContact            String?              // Project owner contact information
-  problemStatement        String?              // Problem statement
-  aiMlApproach            String?              // AI/ML approach (e.g., classification, anomaly detection, forecasting; tools/platforms used)
-  deploymentEnvironment   String?              // Deployment environment (e.g., Python, Databricks, Power BI, Copilot Studio)
-  benefitRealized         String?              // Benefit realized (quantify with before/after baselines, include cost/time/quality KPIs)
-  validationMethod        String?              // Validation method (A/B trial, control chart, retrospection window, peer review)
-  currentBlockers         String?              // Current blockers / support needed (data, infra, access, DS resourcing)
-  nextSteps               String?              // Next steps (scale plan, roadmap, dependencies)
-  
+  team                  String? // Department & team (TEST/MDW, line/tool/module)
+  ownerContact          String? // Project owner contact information
+  problemStatement      String? // Problem statement
+  aiMlApproach          String? // AI/ML approach (e.g., classification, anomaly detection, forecasting; tools/platforms used)
+  deploymentEnvironment String? // Deployment environment (e.g., Python, Databricks, Power BI, Copilot Studio)
+  benefitRealized       String? // Benefit realized (quantify with before/after baselines, include cost/time/quality KPIs)
+  validationMethod      String? // Validation method (A/B trial, control chart, retrospection window, peer review)
+  currentBlockers       String? // Current blockers / support needed (data, infra, access, DS resourcing)
+  nextSteps             String? // Next steps (scale plan, roadmap, dependencies)
+
   // Relations
-  baselineMetrics         BaselineMetric[]
-  kpiDefinitions          KPIDefinition[]
-  metricsTimeseries       MetricTimeseries[]
-  userFeedback            UserFeedback[]
-  roiCalculations         ROICalculation[]
-  agentPerformance        AgentPerformance[]
-  promptLibrary           PromptLibrary[]
-  riskAssessments         RiskAssessment[]
-  complianceChecks        ComplianceCheck[]
-  alerts                  Alert[]
-  phases                  Phase[]
-  
-  createdAt               DateTime             @default(now())
-  updatedAt               DateTime             @updatedAt
+  baselineMetrics   BaselineMetric[]
+  kpiDefinitions    KPIDefinition[]
+  metricsTimeseries MetricTimeseries[]
+  userFeedback      UserFeedback[]
+  roiCalculations   ROICalculation[]
+  agentPerformance  AgentPerformance[]
+  promptLibrary     PromptLibrary[]
+  riskAssessments   RiskAssessment[]
+  complianceChecks  ComplianceCheck[]
+  alerts            Alert[]
+  phases            Phase[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ============================================================================
@@ -220,49 +220,49 @@ model AIProject {
 // ============================================================================
 
 model BaselineMetric {
-  id                String      @id @default(uuid())
-  projectId         String
-  project           AIProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  metricName        String
-  metricValue       Float
-  metricUnit        String?
-  measurementDate   DateTime
-  notes             String?
-  createdAt         DateTime    @default(now())
+  id              String    @id @default(uuid())
+  projectId       String
+  project         AIProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  metricName      String
+  metricValue     Float
+  metricUnit      String?
+  measurementDate DateTime
+  notes           String?
+  createdAt       DateTime  @default(now())
 }
 
 model KPIDefinition {
-  id                    String              @id @default(uuid())
-  projectId             String
-  project               AIProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  kpiName               String
-  metricType            MetricType
-  description           String?
-  targetValue           Float?
-  unit                  String?
-  calculationFormula    String?
-  dataSource            String?
-  collectionFrequency   String?             // 'daily', 'weekly', 'monthly'
-  isActive              Boolean             @default(true)
-  
+  id                  String     @id @default(uuid())
+  projectId           String
+  project             AIProject  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  kpiName             String
+  metricType          MetricType
+  description         String?
+  targetValue         Float?
+  unit                String?
+  calculationFormula  String?
+  dataSource          String?
+  collectionFrequency String? // 'daily', 'weekly', 'monthly'
+  isActive            Boolean    @default(true)
+
   // Relations
-  metricsTimeseries     MetricTimeseries[]
-  
-  createdAt             DateTime            @default(now())
-  updatedAt             DateTime            @updatedAt
+  metricsTimeseries MetricTimeseries[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MetricTimeseries {
-  id            String         @id @default(uuid())
-  time          DateTime
-  projectId     String
-  project       AIProject      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  kpiId         String
-  kpi           KPIDefinition  @relation(fields: [kpiId], references: [id], onDelete: Cascade)
-  metricValue   Float
-  metadata      String?        // JSON stored as string
-  createdAt     DateTime       @default(now())
-  
+  id          String        @id @default(uuid())
+  time        DateTime
+  projectId   String
+  project     AIProject     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  kpiId       String
+  kpi         KPIDefinition @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+  metricValue Float
+  metadata    String? // JSON stored as string
+  createdAt   DateTime      @default(now())
+
   @@index([projectId, time])
   @@index([kpiId, time])
 }
@@ -272,36 +272,36 @@ model MetricTimeseries {
 // ============================================================================
 
 model UserFeedback {
-  id            String              @id @default(uuid())
-  projectId     String
-  project       AIProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  userId        String
-  user          User                @relation(fields: [userId], references: [id])
-  rating        Int?                // 1-5 scale
-  sentiment     FeedbackSentiment?
-  feedbackText  String?
-  category      String?
-  submittedAt   DateTime            @default(now())
+  id           String             @id @default(uuid())
+  projectId    String
+  project      AIProject          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User               @relation(fields: [userId], references: [id])
+  rating       Int? // 1-5 scale
+  sentiment    FeedbackSentiment?
+  feedbackText String?
+  category     String?
+  submittedAt  DateTime           @default(now())
 }
 
 model ROICalculation {
-  id                      String      @id @default(uuid())
-  projectId               String
-  project                 AIProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  calculationDate         DateTime
-  
+  id              String    @id @default(uuid())
+  projectId       String
+  project         AIProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  calculationDate DateTime
+
   // Costs
-  implementationCost      Float?
-  operationalCost         Float?
-  maintenanceCost         Float?
-  
+  implementationCost Float?
+  operationalCost    Float?
+  maintenanceCost    Float?
+
   // Benefits
-  costSavings             Float?
-  revenueIncrease         Float?
-  productivityGainsValue  Float?
-  
-  notes                   String?
-  createdAt               DateTime    @default(now())
+  costSavings            Float?
+  revenueIncrease        Float?
+  productivityGainsValue Float?
+
+  notes     String?
+  createdAt DateTime @default(now())
 }
 
 // ============================================================================
@@ -309,28 +309,28 @@ model ROICalculation {
 // ============================================================================
 
 model AgentPerformance {
-  id                    String      @id @default(uuid())
-  projectId             String
-  project               AIProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  agentName             String
-  measurementTimestamp  DateTime
-  
+  id                   String    @id @default(uuid())
+  projectId            String
+  project              AIProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  agentName            String
+  measurementTimestamp DateTime
+
   // Performance metrics
   tasksAssigned         Int?
   tasksCompleted        Int?
   tasksFailed           Int?
   successRate           Float?
-  averageCompletionTime String?     // Duration stored as string
+  averageCompletionTime String? // Duration stored as string
   errorRate             Float?
-  autonomyScore         Float?      // Percentage
-  
+  autonomyScore         Float? // Percentage
+
   // Quality metrics
   accuracyScore         Float?
   userSatisfactionScore Float?
-  
-  metadata              String?     // JSON stored as string
-  createdAt             DateTime    @default(now())
-  
+
+  metadata  String? // JSON stored as string
+  createdAt DateTime @default(now())
+
   @@index([projectId, measurementTimestamp])
 }
 
@@ -339,38 +339,38 @@ model AgentPerformance {
 // ============================================================================
 
 model PromptLibrary {
-  id            String            @id @default(uuid())
-  projectId     String?
-  project       AIProject?        @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  promptTitle   String
-  promptText    String
-  category      String?
-  tags          String?           // Comma-separated tags
-  authorId      String
-  author        User              @relation(fields: [authorId], references: [id])
-  useCase       String?
-  
+  id          String     @id @default(uuid())
+  projectId   String?
+  project     AIProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  promptTitle String
+  promptText  String
+  category    String?
+  tags        String? // Comma-separated tags
+  authorId    String
+  author      User       @relation(fields: [authorId], references: [id])
+  useCase     String?
+
   // Metrics
-  usageCount    Int               @default(0)
+  usageCount    Int       @default(0)
   averageRating Float?
   lastUsedAt    DateTime?
-  
-  version       Int               @default(1)
-  isActive      Boolean           @default(true)
-  
-  usageLog      PromptUsageLog[]
-  
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+
+  version  Int     @default(1)
+  isActive Boolean @default(true)
+
+  usageLog PromptUsageLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model PromptUsageLog {
-  id              String         @id @default(uuid())
+  id              String        @id @default(uuid())
   promptId        String
-  prompt          PromptLibrary  @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  prompt          PromptLibrary @relation(fields: [promptId], references: [id], onDelete: Cascade)
   userId          String
-  usedAt          DateTime       @default(now())
-  rating          Int?           // 1-5 scale
+  usedAt          DateTime      @default(now())
+  rating          Int? // 1-5 scale
   feedback        String?
   executionTimeMs Int?
 }
@@ -380,36 +380,36 @@ model PromptUsageLog {
 // ============================================================================
 
 model RiskAssessment {
-  id                String       @id @default(uuid())
-  projectId         String
-  project           AIProject    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  riskTitle         String
-  riskDescription   String?
-  category          String?      // 'security', 'compliance', 'operational', 'reputational'
-  severity          RiskSeverity
-  likelihood        Int          // 1-5 scale
-  status            RiskStatus   @default(OPEN)
-  mitigationPlan    String?
-  ownerId           String
-  owner             User         @relation(fields: [ownerId], references: [id])
-  identifiedDate    DateTime
-  reviewDate        DateTime?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  id              String       @id @default(uuid())
+  projectId       String
+  project         AIProject    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  riskTitle       String
+  riskDescription String?
+  category        String? // 'security', 'compliance', 'operational', 'reputational'
+  severity        RiskSeverity
+  likelihood      Int // 1-5 scale
+  status          RiskStatus   @default(OPEN)
+  mitigationPlan  String?
+  ownerId         String
+  owner           User         @relation(fields: [ownerId], references: [id])
+  identifiedDate  DateTime
+  reviewDate      DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 }
 
 model ComplianceCheck {
-  id                  String      @id @default(uuid())
+  id                  String    @id @default(uuid())
   projectId           String
-  project             AIProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  complianceFramework String      // 'GDPR', 'SOC2', 'ISO27001', etc.
+  project             AIProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  complianceFramework String // 'GDPR', 'SOC2', 'ISO27001', etc.
   requirementName     String
   isCompliant         Boolean?
   lastCheckedAt       DateTime?
   evidenceUrl         String?
   notes               String?
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 }
 
 // ============================================================================
@@ -417,19 +417,19 @@ model ComplianceCheck {
 // ============================================================================
 
 model Alert {
-  id              String         @id @default(uuid())
-  projectId       String?
-  project         AIProject?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  alertTitle      String
-  alertMessage    String?
-  severity        AlertSeverity
-  status          AlertStatus    @default(ACTIVE)
-  triggeredAt     DateTime       @default(now())
-  acknowledgedAt  DateTime?
-  resolvedAt      DateTime?
-  acknowledgedBy  String?
-  acknowledgedByUser User?       @relation(fields: [acknowledgedBy], references: [id])
-  metadata        String?        // JSON stored as string
+  id                 String        @id @default(uuid())
+  projectId          String?
+  project            AIProject?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  alertTitle         String
+  alertMessage       String?
+  severity           AlertSeverity
+  status             AlertStatus   @default(ACTIVE)
+  triggeredAt        DateTime      @default(now())
+  acknowledgedAt     DateTime?
+  resolvedAt         DateTime?
+  acknowledgedBy     String?
+  acknowledgedByUser User?         @relation(fields: [acknowledgedBy], references: [id])
+  metadata           String? // JSON stored as string
 }
 
 // ============================================================================
@@ -437,48 +437,84 @@ model Alert {
 // ============================================================================
 
 model Phase {
-  id                String        @id @default(uuid())
-  projectId         String
-  project           AIProject     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  phaseName         String
-  description       String?
-  phaseOrder        Int           // Order in sequence
-  status            PhaseStatus   @default(NOT_STARTED)
-  startDate         DateTime?
-  endDate           DateTime?
-  targetEndDate     DateTime?
-  progressPercentage Float?       @default(0)
-  
-  milestones        Milestone[]
-  dependsOn         PhaseDependency[] @relation("DependentPhase")
-  requiredBy        PhaseDependency[] @relation("RequiredPhase")
-  
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  id                 String      @id @default(uuid())
+  projectId          String
+  project            AIProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phaseName          String
+  description        String?
+  phaseOrder         Int // Order in sequence
+  status             PhaseStatus @default(NOT_STARTED)
+  startDate          DateTime?
+  endDate            DateTime?
+  targetEndDate      DateTime?
+  progressPercentage Float?      @default(0)
+
+  // Auto-tracking fields
+  lastAutoCalculatedAt   DateTime?
+  autoCalculatedProgress Boolean   @default(false)
+  delayReason            String?
+
+  milestones Milestone[]
+  dependsOn  PhaseDependency[] @relation("DependentPhase")
+  requiredBy PhaseDependency[] @relation("RequiredPhase")
+  history    PhaseHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Milestone {
-  id            String      @id @default(uuid())
+  id            String             @id @default(uuid())
   phaseId       String
-  phase         Phase       @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  phase         Phase              @relation(fields: [phaseId], references: [id], onDelete: Cascade)
   milestoneName String
   description   String?
   targetDate    DateTime?
   completedDate DateTime?
-  isCompleted   Boolean     @default(false)
-  deliverables  String?     // Comma-separated or JSON
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  isCompleted   Boolean            @default(false)
+  deliverables  String? // Comma-separated or JSON
+  history       MilestoneHistory[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 }
 
 model PhaseDependency {
-  id              String   @id @default(uuid())
+  id               String   @id @default(uuid())
   dependentPhaseId String
-  dependentPhase  Phase    @relation("DependentPhase", fields: [dependentPhaseId], references: [id], onDelete: Cascade)
-  requiredPhaseId String
-  requiredPhase   Phase    @relation("RequiredPhase", fields: [requiredPhaseId], references: [id], onDelete: Cascade)
-  dependencyType  String?  // 'finish-to-start', 'start-to-start', etc.
-  createdAt       DateTime @default(now())
-  
+  dependentPhase   Phase    @relation("DependentPhase", fields: [dependentPhaseId], references: [id], onDelete: Cascade)
+  requiredPhaseId  String
+  requiredPhase    Phase    @relation("RequiredPhase", fields: [requiredPhaseId], references: [id], onDelete: Cascade)
+  dependencyType   String? // 'finish-to-start', 'start-to-start', etc.
+  createdAt        DateTime @default(now())
+
   @@unique([dependentPhaseId, requiredPhaseId])
+}
+
+// ============================================================================
+// ROADMAP HISTORY / AUDIT TRAIL
+// ============================================================================
+
+model PhaseHistory {
+  id                 String       @id @default(uuid())
+  phaseId            String
+  phase              Phase        @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  status             PhaseStatus?
+  progressPercentage Float?
+  previousStatus     PhaseStatus?
+  previousProgress   Float?
+  changeReason       String? // 'auto_calculated', 'manual', 'milestone_completed', etc.
+  changedAt          DateTime     @default(now())
+  metadata           String? // JSON stored as string
+}
+
+model MilestoneHistory {
+  id                String    @id @default(uuid())
+  milestoneId       String
+  milestone         Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  isCompleted       Boolean?
+  previousCompleted Boolean?
+  completedDate     DateTime?
+  changeReason      String? // 'auto_calculated', 'manual', etc.
+  changedAt         DateTime  @default(now())
+  metadata          String? // JSON stored as string
 }

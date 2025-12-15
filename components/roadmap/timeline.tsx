@@ -9,10 +9,15 @@ import { Button } from '@/components/ui/button';
 import { formatDate, getDaysUntil, isOverdue } from '@/lib/utils';
 import { CheckCircle2, Circle, Clock, AlertCircle, Edit } from 'lucide-react';
 import { EditPhaseDialog } from '@/components/dashboard/edit-phase-dialog';
+import { DelayWarning } from '@/components/roadmap/delay-warning';
+import { AutoProgressIndicator } from '@/components/roadmap/auto-progress-indicator';
 import type { Phase, Milestone, PhaseStatus } from '@prisma/client';
 
-interface PhaseWithMilestones extends Phase {
+interface PhaseWithMilestones extends Omit<Phase, 'autoCalculatedProgress' | 'lastAutoCalculatedAt' | 'delayReason'> {
   milestones: Milestone[];
+  autoCalculatedProgress?: boolean | null;
+  lastAutoCalculatedAt?: Date | null;
+  delayReason?: string | null;
 }
 
 interface TimelineProps {
@@ -134,11 +139,25 @@ export function Timeline({ phases, currentPhaseId, projectStartDate, projectTarg
                   )}
                 </div>
 
+                {/* Delay Warning */}
+                <DelayWarning
+                  status={phase.status}
+                  targetEndDate={phase.targetEndDate}
+                  delayReason={phase.delayReason}
+                  progressPercentage={phase.progressPercentage}
+                />
+
                 {/* Progress Bar - Enterprise Style */}
                 {phase.progressPercentage !== null && (
                   <div className="space-y-2 pt-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground font-medium">Progress</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground font-medium">Progress</span>
+                        <AutoProgressIndicator
+                          autoCalculated={phase.autoCalculatedProgress ?? false}
+                          lastCalculatedAt={phase.lastAutoCalculatedAt}
+                        />
+                      </div>
                       <span className="font-semibold">{phase.progressPercentage}%</span>
                     </div>
                     <Progress value={phase.progressPercentage} className="h-2.5" />

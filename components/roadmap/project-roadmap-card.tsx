@@ -8,13 +8,17 @@ import { Timeline } from '@/components/roadmap/timeline';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { StatusBadge } from '@/components/dashboard/status-badge';
+import { AutoProgressIndicator } from '@/components/roadmap/auto-progress-indicator';
 import { formatDate } from '@/lib/utils';
 import { ChevronDown, ChevronRight, ExternalLink, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { Phase, Milestone } from '@prisma/client';
 
-interface PhaseWithMilestones extends Phase {
+interface PhaseWithMilestones extends Omit<Phase, 'autoCalculatedProgress' | 'lastAutoCalculatedAt' | 'delayReason'> {
   milestones: Milestone[];
+  autoCalculatedProgress?: boolean | null;
+  lastAutoCalculatedAt?: Date | null;
+  delayReason?: string | null;
 }
 
 interface ProjectRoadmapCardProps {
@@ -150,9 +154,15 @@ export function ProjectRoadmapCard({ project, defaultOpen = false }: ProjectRoad
                     {currentPhase ? currentPhase.phaseName : 'All Complete'}
                   </div>
                   {currentPhase && (
-                    <p className="text-sm text-muted-foreground">
-                      {currentPhase.progressPercentage ?? 0}% progress
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">
+                        {currentPhase.progressPercentage ?? 0}% progress
+                      </p>
+                      <AutoProgressIndicator
+                        autoCalculated={currentPhase.autoCalculatedProgress ?? false}
+                        lastCalculatedAt={currentPhase.lastAutoCalculatedAt}
+                      />
+                    </div>
                   )}
                 </CardContent>
               </Card>

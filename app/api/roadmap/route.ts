@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
+import { recalculatePhase } from '@/lib/services/roadmap-auto-tracker';
+import { checkAndCreatePhaseAlerts, checkAndCreateMilestoneAlerts } from '@/lib/services/roadmap-alerts';
 
 export async function GET(request: NextRequest) {
   try {
@@ -95,8 +97,20 @@ export async function POST(request: NextRequest) {
         },
         include: {
           project: true,
+          milestones: true,
         },
       });
+
+      // Auto-calculate progress and status if milestones exist
+      if (phase.milestones.length > 0) {
+        try {
+          await recalculatePhase(phase.id);
+          await checkAndCreatePhaseAlerts(phase.id);
+        } catch (error) {
+          console.error('Auto-calculation error:', error);
+          // Continue even if auto-calculation fails
+        }
+      }
 
       // Revalidate roadmap and project pages
       revalidatePath('/roadmap');
@@ -121,6 +135,25 @@ export async function POST(request: NextRequest) {
           },
         },
       });
+
+      // Auto-calculate phase progress when milestone is created
+      try {
+        const previousPhase = await prisma.phase.findUnique({
+          where: { id: body.phaseId },
+          select: { progressPercentage: true, status: true },
+        });
+
+        const result = await recalculatePhase(body.phaseId);
+        await checkAndCreatePhaseAlerts(
+          body.phaseId,
+          previousPhase?.progressPercentage ?? undefined,
+          previousPhase?.status ?? undefined
+        );
+        await checkAndCreateMilestoneAlerts(milestone.id, false);
+      } catch (error) {
+        console.error('Auto-calculation error:', error);
+        // Continue even if auto-calculation fails
+      }
 
       // Revalidate roadmap and project pages
       revalidatePath('/roadmap');
