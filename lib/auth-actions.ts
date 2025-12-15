@@ -114,15 +114,15 @@ export async function register(formData: FormData) {
     }
 
     // Prepare user data
+    // Default to GUEST role for new users (only ADMIN can change roles via Settings)
     const userData: any = {
       name: validated.name,
       email: validated.email,
       password: hashedPassword,
+      role: validated.role && ['ADMIN', 'MEMBER', 'GUEST'].includes(validated.role.toUpperCase())
+        ? validated.role.toUpperCase()
+        : 'GUEST', // Default to GUEST
     };
-
-    if (validated.role) {
-      userData.role = validated.role;
-    }
 
     if (validated.departmentId) {
       // Verify department exists if provided
@@ -382,12 +382,17 @@ export async function createUser(name: string, email: string, role?: string, dep
       return { success: true, data: existingUser };
     }
 
+    // Validate and convert role to UserRole enum
+    const validRole = role && ['ADMIN', 'MEMBER', 'GUEST'].includes(role.toUpperCase())
+      ? (role.toUpperCase() as 'ADMIN' | 'MEMBER' | 'GUEST')
+      : 'GUEST';
+
     // Create user without password (they'll need to reset it)
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        role,
+        role: validRole,
         departmentId,
       },
     });

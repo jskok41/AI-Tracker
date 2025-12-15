@@ -34,7 +34,7 @@ async function main() {
     data: {
       email: 'john.doe@company.com',
       name: 'John Doe',
-      role: 'AI Program Manager',
+      role: 'ADMIN', // Admin role
       departmentId: dataScienceDept.id,
     },
   });
@@ -43,7 +43,7 @@ async function main() {
     data: {
       email: 'jane.smith@company.com',
       name: 'Jane Smith',
-      role: 'Engineering Lead',
+      role: 'MEMBER', // Member role
       departmentId: engineeringDept.id,
     },
   });
@@ -52,7 +52,7 @@ async function main() {
     data: {
       email: 'bob.johnson@company.com',
       name: 'Bob Johnson',
-      role: 'Operations Manager',
+      role: 'MEMBER', // Member role
       departmentId: operationsDept.id,
     },
   });

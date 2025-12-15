@@ -12,6 +12,7 @@ import {
   BarChart3,
   Tag,
   Building2,
+  Settings,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -21,6 +22,7 @@ const navigation = [
   { name: 'Projects', href: '/projects', icon: FolderKanban },
   { name: 'Risk Management', href: '/risks', icon: AlertTriangle },
   { name: 'Reports', href: '/reports', icon: BarChart3 },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
 const CATEGORY_LABELS: Record<string, string> = {

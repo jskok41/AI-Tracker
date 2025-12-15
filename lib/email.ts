@@ -17,15 +17,46 @@ function getEmailTransporter() {
     return null;
   }
 
-  return nodemailer.createTransport({
+  const portNum = parseInt(port);
+  const isGmail = host.includes('gmail.com');
+  
+  // Log configuration (without exposing password)
+  console.log('Email configuration:', {
     host,
-    port: parseInt(port),
-    secure: port === '465', // true for 465, false for other ports
+    port: portNum,
+    user,
+    passwordLength: pass.length,
+    isGmail,
+  });
+
+  // Validate Gmail configuration
+  if (isGmail) {
+    if (!user.includes('@')) {
+      console.error('ERROR: EMAIL_SERVER_USER should be full Gmail address (e.g., your-email@gmail.com), got:', user);
+    }
+    if (pass.length !== 16 && pass.length !== 20) {
+      console.warn('WARNING: Gmail App Password should be 16 characters. Current length:', pass.length);
+      console.warn('If using regular password, it will fail. Generate App Password at: https://myaccount.google.com/apppasswords');
+    }
+  }
+  
+  // Gmail-specific configuration
+  const transporterConfig: any = {
+    host,
+    port: portNum,
+    secure: portNum === 465, // true for 465 (SSL), false for 587 (STARTTLS)
     auth: {
       user,
       pass,
     },
-  });
+  };
+
+  // For Gmail on port 587, ensure TLS is required
+  if (isGmail && portNum === 587) {
+    transporterConfig.requireTLS = true;
+  }
+
+  return nodemailer.createTransport(transporterConfig);
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
@@ -41,7 +72,9 @@ export async function sendPasswordResetEmail(email: string, token: string) {
 
   try {
     // Verify transporter configuration
+    console.log('Verifying email transporter connection...');
     await transporter.verify();
+    console.log('Email transporter verified successfully');
     
     const info = await transporter.sendMail({
       from: emailFrom,
@@ -91,7 +124,19 @@ export async function sendPasswordResetEmail(email: string, token: string) {
       response: error.response,
       to: email,
     });
-    throw new Error(`Failed to send email: ${error.message || 'Unknown error'}`);
+    
+    // Provide more helpful error messages for common Gmail issues
+    let errorMessage = error.message || 'Unknown error';
+    
+    if (error.responseCode === 535 || error.message?.includes('535') || error.message?.includes('BadCredentials')) {
+      errorMessage = 'Invalid email credentials. Please check your EMAIL_SERVER_USER and EMAIL_SERVER_PASSWORD environment variables. For Gmail, make sure you\'re using an App Password (not your regular password). See: https://support.google.com/mail/?p=BadCredentials';
+    } else if (error.message?.includes('EAUTH')) {
+      errorMessage = 'Authentication failed. Please verify your email credentials are correct.';
+    } else if (error.message?.includes('ETIMEDOUT') || error.message?.includes('ECONNREFUSED')) {
+      errorMessage = 'Could not connect to email server. Please check EMAIL_SERVER_HOST and EMAIL_SERVER_PORT settings.';
+    }
+    
+    throw new Error(`Failed to send email: ${errorMessage}`);
   }
 }
 
@@ -138,7 +183,19 @@ export async function sendWelcomeEmail(email: string, name: string) {
     return { success: true };
   } catch (error: any) {
     console.error('Failed to send welcome email:', error);
-    throw new Error(`Failed to send email: ${error.message || 'Unknown error'}`);
+    
+    // Provide more helpful error messages for common Gmail issues
+    let errorMessage = error.message || 'Unknown error';
+    
+    if (error.responseCode === 535 || error.message?.includes('535') || error.message?.includes('BadCredentials')) {
+      errorMessage = 'Invalid email credentials. Please check your EMAIL_SERVER_USER and EMAIL_SERVER_PASSWORD environment variables. For Gmail, make sure you\'re using an App Password (not your regular password). See: https://support.google.com/mail/?p=BadCredentials';
+    } else if (error.message?.includes('EAUTH')) {
+      errorMessage = 'Authentication failed. Please verify your email credentials are correct.';
+    } else if (error.message?.includes('ETIMEDOUT') || error.message?.includes('ECONNREFUSED')) {
+      errorMessage = 'Could not connect to email server. Please check EMAIL_SERVER_HOST and EMAIL_SERVER_PORT settings.';
+    }
+    
+    throw new Error(`Failed to send email: ${errorMessage}`);
   }
 }
 

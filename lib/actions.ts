@@ -52,6 +52,12 @@ const riskSchema = z.object({
 
 // Project actions
 export async function createProject(formData: FormData) {
+  // Check if user can create projects (not guest)
+  const { canEdit } = await import('@/lib/permissions');
+  if (!(await canEdit())) {
+    return { success: false, error: 'Guest users have view-only access.' };
+  }
+
   try {
     const data = {
       name: formData.get('name') as string,
@@ -202,6 +208,12 @@ export async function getProjectsForSelect() {
 // ============================================================================
 
 export async function updateProject(id: string, formData: FormData) {
+  // Check if user can edit this project
+  const { canEditProject } = await import('@/lib/permissions');
+  if (!(await canEditProject(id))) {
+    return { success: false, error: 'You do not have permission to edit this project.' };
+  }
+
   try {
     const startDateValue = formData.get('startDate') as string;
     const targetCompletionDateValue = formData.get('targetCompletionDate') as string;
@@ -254,6 +266,12 @@ export async function updateProject(id: string, formData: FormData) {
 }
 
 export async function updateProjectStatus(projectId: string, status: ProjectStatus) {
+  // Check if user can edit this project
+  const { canEditProject } = await import('@/lib/permissions');
+  if (!(await canEditProject(projectId))) {
+    return { success: false, error: 'You do not have permission to update this project status.' };
+  }
+
   try {
     const project = await prisma.aIProject.update({
       where: { id: projectId },
@@ -354,6 +372,12 @@ export async function updateRisk(id: string, formData: FormData) {
 // ============================================================================
 
 export async function deleteProject(id: string) {
+  // Check if user can edit this project
+  const { canEditProject } = await import('@/lib/permissions');
+  if (!(await canEditProject(id))) {
+    return { success: false, error: 'You do not have permission to delete this project.' };
+  }
+
   try {
     await prisma.aIProject.delete({
       where: { id },
