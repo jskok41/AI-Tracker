@@ -34,11 +34,14 @@ export async function DELETE(
 
     // Delete file from Vercel Blob if it exists and is a blob URL
     if (project.screenshotUrl && project.screenshotUrl.startsWith('https://')) {
-      try {
-        await del(project.screenshotUrl);
-      } catch (error) {
-        console.error('Error deleting screenshot from blob:', error);
-        // Continue even if deletion fails (file might not exist)
+      // Only try to delete if Blob Storage is configured
+      if (process.env.BLOB_READ_WRITE_TOKEN) {
+        try {
+          await del(project.screenshotUrl);
+        } catch (error) {
+          console.error('Error deleting screenshot from blob:', error);
+          // Continue even if deletion fails (file might not exist)
+        }
       }
     }
 

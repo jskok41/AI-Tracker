@@ -35,6 +35,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 });
     }
 
+    // Check if Blob Storage is configured
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json(
+        { 
+          error: 'Blob Storage not configured. Please set up Vercel Blob Storage in your project settings. See BLOB-STORAGE-SETUP.md for instructions.',
+          setupRequired: true
+        },
+        { status: 503 }
+      );
+    }
+
     // Get existing screenshot URL to delete old one
     const existingProject = await prisma.aIProject.findUnique({
       where: { id: projectId },
@@ -71,6 +82,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: blob.url, success: true });
   } catch (error) {
     console.error('Upload error:', error);
+    
+    // Check for specific Blob Storage errors
+    if (error instanceof Error && error.message.includes('No token found')) {
+      return NextResponse.json(
+        { 
+          error: 'Blob Storage not configured. Please set up Vercel Blob Storage in your project settings.',
+          setupRequired: true
+        },
+        { status: 503 }
+      );
+    }
+    
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to upload screenshot' },
       { status: 500 }
