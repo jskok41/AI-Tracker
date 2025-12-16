@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProjectScreenshotUpload } from './project-screenshot-upload';
+import { EditableProjectLink } from './editable-project-link';
 
 interface Project {
   id: string;
@@ -278,40 +279,18 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                   <div className="mt-6 pt-6 border-t cyberpunk:border-[#00FF41]/20">
                     <h4 className="text-sm font-semibold text-muted-foreground mb-4 cyberpunk:text-[#00FF41]/70">Project Links</h4>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <LinkIcon className="h-4 w-4 text-muted-foreground cyberpunk:text-[#00FF41]/70 flex-shrink-0" />
-                        <span className="text-sm font-medium text-muted-foreground cyberpunk:text-[#00FF41]/70 min-w-[140px]">SharePoint Link:</span>
-                        {project.sharePointLink ? (
-                          <a
-                            href={project.sharePointLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-blue-600 dark:text-blue-400 cyberpunk:text-[#00FF41] hover:underline flex items-center gap-1.5 flex-1 min-w-0"
-                          >
-                            <span className="truncate">{project.sharePointLink}</span>
-                            <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" />
-                          </a>
-                        ) : (
-                          <span className="text-sm text-muted-foreground italic cyberpunk:text-[#00FF41]/50">Not provided</span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <LinkIcon className="h-4 w-4 text-muted-foreground cyberpunk:text-[#00FF41]/70 flex-shrink-0" />
-                        <span className="text-sm font-medium text-muted-foreground cyberpunk:text-[#00FF41]/70 min-w-[140px]">App Link:</span>
-                        {project.appLink ? (
-                          <a
-                            href={project.appLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-blue-600 dark:text-blue-400 cyberpunk:text-[#00FF41] hover:underline flex items-center gap-1.5 flex-1 min-w-0"
-                          >
-                            <span className="truncate">{project.appLink}</span>
-                            <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" />
-                          </a>
-                        ) : (
-                          <span className="text-sm text-muted-foreground italic cyberpunk:text-[#00FF41]/50">Not provided</span>
-                        )}
-                      </div>
+                      <EditableProjectLink
+                        projectId={project.id}
+                        label="SharePoint Link"
+                        value={project.sharePointLink || null}
+                        fieldName="sharePointLink"
+                      />
+                      <EditableProjectLink
+                        projectId={project.id}
+                        label="App Link"
+                        value={project.appLink || null}
+                        fieldName="appLink"
+                      />
                     </div>
                   </div>
 

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { auth } from '@/lib/auth';
+import { canEditProject } from '@/lib/permissions';
+import { logActivity } from '@/lib/services/activity-logger';
 
 export async function GET(
   request: NextRequest,
@@ -73,8 +76,29 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
+    
+    // Check permissions
+    const canEdit = await canEditProject(id);
+    if (!canEdit) {
+      return NextResponse.json(
+        { error: 'You do not have permission to edit this project' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
+
+    // Get project name before update for activity log
+    const existingProject = await prisma.aIProject.findUnique({
+      where: { id },
+      select: { name: true },
+    });
 
     const project = await prisma.aIProject.update({
       where: { id },
@@ -91,12 +115,29 @@ export async function PATCH(
         ...(body.budgetSpent !== undefined && { budgetSpent: body.budgetSpent }),
         ...(body.expectedRoiPercentage !== undefined && { expectedRoiPercentage: body.expectedRoiPercentage }),
         ...(body.strategicPriority !== undefined && { strategicPriority: body.strategicPriority }),
+        ...(body.sharePointLink !== undefined && { sharePointLink: body.sharePointLink }),
+        ...(body.appLink !== undefined && { appLink: body.appLink }),
       },
       include: {
         department: true,
         owner: true,
       },
     });
+
+    // Log activity for link updates
+    if (body.sharePointLink !== undefined || body.appLink !== undefined) {
+      const updatedFields = [];
+      if (body.sharePointLink !== undefined) updatedFields.push('SharePoint Link');
+      if (body.appLink !== undefined) updatedFields.push('App Link');
+      
+      await logActivity({
+        type: 'PROJECT_UPDATED',
+        userId: session.user.id,
+        projectId: project.id,
+        title: `Project "${project.name}" links updated`,
+        description: `Updated ${updatedFields.join(' and ')}`,
+      });
+    }
 
     return NextResponse.json(project);
   } catch (error) {
