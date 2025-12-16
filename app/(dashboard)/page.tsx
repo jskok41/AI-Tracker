@@ -253,6 +253,7 @@ async function getDashboardData(departmentIds?: string[]) {
         validationMethod: project.validationMethod,
         currentBlockers: project.currentBlockers,
         nextSteps: project.nextSteps,
+        screenshotUrl: project.screenshotUrl,
       };
     })
     .sort((a, b) => {
@@ -385,8 +386,8 @@ export default async function DashboardPage({
       {isAdmin && (
         <div>
           <RecentActivity activities={recentActivities} />
-        </div>
-      )}
+                </div>
+            )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ProjectScreenshotUpload } from './project-screenshot-upload';
 
 interface Project {
   id: string;
@@ -44,6 +45,7 @@ interface Project {
   validationMethod?: string | null;
   currentBlockers?: string | null;
   nextSteps?: string | null;
+  screenshotUrl?: string | null;
 }
 
 interface ExpandableProjectListProps {
@@ -267,6 +269,14 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                         <Progress value={budgetProgress} className="h-2" />
                       </div>
                     )}
+                  </div>
+
+                  {/* Project Screenshot */}
+                  <div className="mt-6 pt-6 border-t cyberpunk:border-[#00FF41]/20">
+                    <ProjectScreenshotUpload
+                      projectId={project.id}
+                      currentScreenshotUrl={project.screenshotUrl}
+                    />
                   </div>
 
                   {/* Additional Details */}

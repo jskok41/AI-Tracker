@@ -205,6 +205,7 @@ model AIProject {
   validationMethod      String? // Validation method (A/B trial, control chart, retrospection window, peer review)
   currentBlockers       String? // Current blockers / support needed (data, infra, access, DS resourcing)
   nextSteps             String? // Next steps (scale plan, roadmap, dependencies)
+  screenshotUrl         String? // Project screenshot URL
 
   // Relations
   baselineMetrics   BaselineMetric[]
