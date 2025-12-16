@@ -206,6 +206,8 @@ model AIProject {
   currentBlockers       String? // Current blockers / support needed (data, infra, access, DS resourcing)
   nextSteps             String? // Next steps (scale plan, roadmap, dependencies)
   screenshotUrl         String? // Project screenshot URL
+  sharePointLink        String? // SharePoint link
+  appLink               String? // App link
 
   // Relations
   baselineMetrics   BaselineMetric[]

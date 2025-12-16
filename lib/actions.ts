@@ -28,6 +28,8 @@ const projectSchema = z.object({
   validationMethod: z.string().optional(),
   currentBlockers: z.string().optional(),
   nextSteps: z.string().optional(),
+  sharePointLink: z.string().url().optional().or(z.literal('')),
+  appLink: z.string().url().optional().or(z.literal('')),
 });
 
 const promptSchema = z.object({
@@ -81,6 +83,8 @@ export async function createProject(formData: FormData) {
       validationMethod: formData.get('validationMethod') as string || undefined,
       currentBlockers: formData.get('currentBlockers') as string || undefined,
       nextSteps: formData.get('nextSteps') as string || undefined,
+      sharePointLink: formData.get('sharePointLink') as string || undefined,
+      appLink: formData.get('appLink') as string || undefined,
     };
 
     const validated = projectSchema.parse(data);
@@ -282,6 +286,8 @@ export async function updateProject(id: string, formData: FormData) {
       validationMethod: formData.get('validationMethod') as string || undefined,
       currentBlockers: formData.get('currentBlockers') as string || undefined,
       nextSteps: formData.get('nextSteps') as string || undefined,
+      sharePointLink: formData.get('sharePointLink') as string || undefined,
+      appLink: formData.get('appLink') as string || undefined,
     };
 
     const validated = projectSchema.parse(data);

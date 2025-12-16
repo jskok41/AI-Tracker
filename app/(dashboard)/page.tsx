@@ -254,6 +254,8 @@ async function getDashboardData(departmentIds?: string[]) {
         currentBlockers: project.currentBlockers,
         nextSteps: project.nextSteps,
         screenshotUrl: project.screenshotUrl,
+        sharePointLink: (project as any).sharePointLink,
+        appLink: (project as any).appLink,
       };
     })
     .sort((a, b) => {

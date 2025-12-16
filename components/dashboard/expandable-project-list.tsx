@@ -16,7 +16,8 @@ import {
   Target, 
   DollarSign,
   Calendar,
-  ExternalLink
+  ExternalLink,
+  Link as LinkIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProjectScreenshotUpload } from './project-screenshot-upload';
@@ -46,6 +47,8 @@ interface Project {
   currentBlockers?: string | null;
   nextSteps?: string | null;
   screenshotUrl?: string | null;
+  sharePointLink?: string | null;
+  appLink?: string | null;
 }
 
 interface ExpandableProjectListProps {
@@ -338,6 +341,45 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                           </Link>
                         )}
                       </div>
+                      
+                      {/* Project Links */}
+                      {(project.sharePointLink || project.appLink) && (
+                        <div className="space-y-2 pt-2 border-t cyberpunk:border-[#00FF41]/20">
+                          <h4 className="text-sm font-semibold text-muted-foreground cyberpunk:text-[#00FF41]/70">Project Links</h4>
+                          <div className="space-y-2">
+                            {project.sharePointLink && (
+                              <div className="flex items-center gap-2">
+                                <LinkIcon className="h-4 w-4 text-muted-foreground cyberpunk:text-[#00FF41]/70" />
+                                <span className="text-sm text-muted-foreground cyberpunk:text-[#00FF41]/70 min-w-[120px]">SharePoint Link:</span>
+                                <a
+                                  href={project.sharePointLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-blue-600 dark:text-blue-400 cyberpunk:text-[#00FF41] hover:underline flex items-center gap-1 truncate max-w-xs"
+                                >
+                                  {project.sharePointLink}
+                                  <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                                </a>
+                              </div>
+                            )}
+                            {project.appLink && (
+                              <div className="flex items-center gap-2">
+                                <LinkIcon className="h-4 w-4 text-muted-foreground cyberpunk:text-[#00FF41]/70" />
+                                <span className="text-sm text-muted-foreground cyberpunk:text-[#00FF41]/70 min-w-[120px]">App Link:</span>
+                                <a
+                                  href={project.appLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-blue-600 dark:text-blue-400 cyberpunk:text-[#00FF41] hover:underline flex items-center gap-1 truncate max-w-xs"
+                                >
+                                  {project.appLink}
+                                  <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
