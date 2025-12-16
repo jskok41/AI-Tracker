@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { put, del } from '@vercel/blob';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { canEditProject } from '@/lib/permissions';
@@ -37,37 +35,44 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 });
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'projects');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
+    // Get existing screenshot URL to delete old one
+    const existingProject = await prisma.aIProject.findUnique({
+      where: { id: projectId },
+      select: { screenshotUrl: true },
+    });
+
+    // Delete old screenshot if exists
+    if (existingProject?.screenshotUrl && existingProject.screenshotUrl.startsWith('https://')) {
+      try {
+        await del(existingProject.screenshotUrl);
+      } catch (error) {
+        console.error('Error deleting old screenshot:', error);
+        // Continue even if deletion fails
+      }
     }
 
     // Generate unique filename
     const timestamp = Date.now();
-    const extension = file.name.split('.').pop();
-    const filename = `${projectId}-${timestamp}.${extension}`;
-    const filepath = join(uploadsDir, filename);
+    const extension = file.name.split('.').pop() || 'png';
+    const filename = `projects/${projectId}-${timestamp}.${extension}`;
 
-    // Convert file to buffer and save
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    await writeFile(filepath, buffer);
-
-    // Generate URL
-    const url = `/uploads/projects/${filename}`;
+    // Upload to Vercel Blob
+    const blob = await put(filename, file, {
+      access: 'public',
+      contentType: file.type,
+    });
 
     // Update project in database
     await prisma.aIProject.update({
       where: { id: projectId },
-      data: { screenshotUrl: url },
+      data: { screenshotUrl: blob.url },
     });
 
-    return NextResponse.json({ url, success: true });
+    return NextResponse.json({ url: blob.url, success: true });
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: 'Failed to upload screenshot' },
+      { error: error instanceof Error ? error.message : 'Failed to upload screenshot' },
       { status: 500 }
     );
   }

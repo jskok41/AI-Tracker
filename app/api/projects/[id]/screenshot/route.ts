@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { unlink } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { del } from '@vercel/blob';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { canEditProject } from '@/lib/permissions';
@@ -34,11 +32,13 @@ export async function DELETE(
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
-    // Delete file if it exists
-    if (project.screenshotUrl) {
-      const filepath = join(process.cwd(), 'public', project.screenshotUrl);
-      if (existsSync(filepath)) {
-        await unlink(filepath);
+    // Delete file from Vercel Blob if it exists and is a blob URL
+    if (project.screenshotUrl && project.screenshotUrl.startsWith('https://')) {
+      try {
+        await del(project.screenshotUrl);
+      } catch (error) {
+        console.error('Error deleting screenshot from blob:', error);
+        // Continue even if deletion fails (file might not exist)
       }
     }
 
@@ -52,7 +52,7 @@ export async function DELETE(
   } catch (error) {
     console.error('Delete screenshot error:', error);
     return NextResponse.json(
-      { error: 'Failed to delete screenshot' },
+      { error: error instanceof Error ? error.message : 'Failed to delete screenshot' },
       { status: 500 }
     );
   }
