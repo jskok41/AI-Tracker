@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { StatusBadge } from './status-badge';
@@ -75,6 +76,7 @@ function formatCategoryName(category: ProjectCategory): string {
 }
 
 export function ExpandableProjectList({ projects }: ExpandableProjectListProps) {
+  const router = useRouter();
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
 
   const toggleProject = (projectId: string) => {
@@ -85,6 +87,11 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
       newExpanded.add(projectId);
     }
     setExpandedProjects(newExpanded);
+  };
+
+  const handleScreenshotUpdate = () => {
+    // Refresh the page to get updated data from the server
+    router.refresh();
   };
 
   return (
@@ -299,6 +306,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                     <ProjectScreenshotUpload
                       projectId={project.id}
                       currentScreenshotUrl={project.screenshotUrl}
+                      onUploadComplete={handleScreenshotUpdate}
                     />
                   </div>
 

@@ -2,8 +2,9 @@
 
 import { useState, useRef } from 'react';
 import { useTheme } from 'next-themes';
-import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Loader2, Maximize2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogClose, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useCanEdit } from '@/lib/hooks/use-permissions';
@@ -23,6 +24,9 @@ export function ProjectScreenshotUpload({
   const canEdit = useCanEdit();
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentScreenshotUrl || null);
+  const [isFullScreenOpen, setIsFullScreenOpen] = useState(false);
+  const [showFirstConfirm, setShowFirstConfirm] = useState(false);
+  const [showSecondConfirm, setShowSecondConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +85,17 @@ export function ProjectScreenshotUpload({
     }
   };
 
-  const handleRemove = async () => {
+  const handleRemoveClick = () => {
+    setShowFirstConfirm(true);
+  };
+
+  const handleFirstConfirm = () => {
+    setShowFirstConfirm(false);
+    setShowSecondConfirm(true);
+  };
+
+  const handleSecondConfirm = async () => {
+    setShowSecondConfirm(false);
     setIsUploading(true);
     try {
       const response = await fetch(`/api/projects/${projectId}/screenshot`, {
@@ -107,6 +121,14 @@ export function ProjectScreenshotUpload({
     fileInputRef.current?.click();
   };
 
+  const handleImageClick = (e: React.MouseEvent) => {
+    // Don't open full-screen if clicking on buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    setIsFullScreenOpen(true);
+  };
+
   // Render template based on theme
   const renderTemplate = () => {
     if (preview) {
@@ -115,28 +137,35 @@ export function ProjectScreenshotUpload({
           <img
             src={preview}
             alt="Project screenshot"
-            className="w-full h-48 object-cover rounded-lg border-2 border-border cyberpunk:border-[#00FF41]/30"
+            onClick={handleImageClick}
+            className="w-full h-48 object-cover rounded-lg border-2 border-border cyberpunk:border-[#00FF41]/30 cursor-pointer transition-opacity hover:opacity-90"
           />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={handleClick}
-                disabled={isUploading}
-                className="cyberpunk:bg-black/50 cyberpunk:border-[#00FF41]/50 cyberpunk:text-[#00FF41]"
-              >
-                <Upload className="h-4 w-4 mr-1" />
-                Replace
-              </Button>
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none">
+            <div className="flex gap-2 pointer-events-auto">
               <Button
                 size="sm"
                 variant="destructive"
-                onClick={handleRemove}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemoveClick();
+                }}
                 disabled={isUploading}
               >
                 <X className="h-4 w-4 mr-1" />
                 Remove
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFullScreenOpen(true);
+                }}
+                disabled={isUploading}
+                className="cyberpunk:bg-black/50 cyberpunk:border-[#00FF41]/50 cyberpunk:text-[#00FF41]"
+              >
+                <Maximize2 className="h-4 w-4 mr-1" />
+                View Full Screen
               </Button>
             </div>
           </div>
@@ -331,36 +360,156 @@ export function ProjectScreenshotUpload({
       return null; // Don't show anything if no screenshot and can't edit
     }
     return (
+      <>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 mb-2">
+            <ImageIcon className="h-4 w-4 text-muted-foreground cyberpunk:text-[#00FF41]/70" />
+            <span className="text-sm font-medium cyberpunk:text-white">Project Screenshot</span>
+          </div>
+          <div className="relative">
+            <img
+              src={preview}
+              alt="Project screenshot"
+              onClick={handleImageClick}
+              className="w-full h-48 object-cover rounded-lg border-2 border-border cyberpunk:border-[#00FF41]/30 cursor-pointer transition-opacity hover:opacity-90"
+            />
+          </div>
+        </div>
+        <Dialog open={isFullScreenOpen} onOpenChange={setIsFullScreenOpen}>
+          <DialogContent 
+            className="!fixed !inset-0 !w-screen !h-screen !max-w-none !max-h-none !p-0 !m-0 !rounded-none !border-0 bg-transparent !flex !items-center !justify-center !translate-x-0 !translate-y-0 !top-0 !left-0 !right-0 !bottom-0 z-[99999] shadow-2xl animate-in fade-in-0 zoom-in-95 duration-300" 
+            showCloseButton={false}
+          >
+            <DialogClose className="fixed top-6 right-6 z-[100000] rounded-full bg-black/90 hover:bg-black text-white p-3 transition-all hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-2xl backdrop-blur-sm border border-white/10">
+              <X className="h-6 w-6" />
+              <span className="sr-only">Close</span>
+            </DialogClose>
+            <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
+              <img
+                src={preview}
+                alt="Project screenshot - Full screen"
+                className="max-w-[95vw] max-h-[95vh] w-auto h-auto object-contain rounded-lg shadow-2xl ring-2 ring-white/10 mx-auto"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
+    );
+  }
+
+  return (
+    <>
       <div className="space-y-2">
         <div className="flex items-center gap-2 mb-2">
           <ImageIcon className="h-4 w-4 text-muted-foreground cyberpunk:text-[#00FF41]/70" />
           <span className="text-sm font-medium cyberpunk:text-white">Project Screenshot</span>
         </div>
-        <div className="relative">
-          <img
-            src={preview}
-            alt="Project screenshot"
-            className="w-full h-48 object-cover rounded-lg border-2 border-border cyberpunk:border-[#00FF41]/30"
-          />
-        </div>
+        {isUploading && !preview ? (
+          <div className="w-full h-48 rounded-lg border-2 border-dashed border-border cyberpunk:border-[#00FF41]/30 flex items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground cyberpunk:text-[#00FF41]" />
+          </div>
+        ) : (
+          renderTemplate()
+        )}
       </div>
-    );
-  }
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 mb-2">
-        <ImageIcon className="h-4 w-4 text-muted-foreground cyberpunk:text-[#00FF41]/70" />
-        <span className="text-sm font-medium cyberpunk:text-white">Project Screenshot</span>
-      </div>
-      {isUploading && !preview ? (
-        <div className="w-full h-48 rounded-lg border-2 border-dashed border-border cyberpunk:border-[#00FF41]/30 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground cyberpunk:text-[#00FF41]" />
-        </div>
-      ) : (
-        renderTemplate()
+      {preview && (
+        <Dialog open={isFullScreenOpen} onOpenChange={setIsFullScreenOpen}>
+          <DialogContent 
+            className="!fixed !inset-0 !w-screen !h-screen !max-w-none !max-h-none !p-0 !m-0 !rounded-none !border-0 bg-transparent !flex !items-center !justify-center !translate-x-0 !translate-y-0 !top-0 !left-0 !right-0 !bottom-0 z-[99999] shadow-2xl animate-in fade-in-0 zoom-in-95 duration-300" 
+            showCloseButton={false}
+          >
+            <DialogClose className="fixed top-6 right-6 z-[100000] rounded-full bg-black/90 hover:bg-black text-white p-3 transition-all hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-2xl backdrop-blur-sm border border-white/10">
+              <X className="h-6 w-6" />
+              <span className="sr-only">Close</span>
+            </DialogClose>
+            <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
+              <img
+                src={preview}
+                alt="Project screenshot - Full screen"
+                className="max-w-[95vw] max-h-[95vh] w-auto h-auto object-contain rounded-lg shadow-2xl ring-2 ring-white/10 mx-auto"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
-    </div>
+      
+      {/* First Confirmation Dialog */}
+      <Dialog open={showFirstConfirm} onOpenChange={setShowFirstConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <DialogTitle>Remove Screenshot?</DialogTitle>
+                <DialogDescription className="mt-1">
+                  Are you sure you want to remove this screenshot? This action cannot be undone.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowFirstConfirm(false)}
+              disabled={isUploading}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleFirstConfirm}
+              disabled={isUploading}
+            >
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Second Confirmation Dialog */}
+      <Dialog open={showSecondConfirm} onOpenChange={setShowSecondConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/20">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <DialogTitle>Final Confirmation</DialogTitle>
+                <DialogDescription className="mt-1">
+                  This is your last chance to cancel. The screenshot will be permanently deleted. Are you absolutely sure?
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowSecondConfirm(false)}
+              disabled={isUploading}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleSecondConfirm}
+              disabled={isUploading}
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Removing...
+                </>
+              ) : (
+                'Yes, Delete Permanently'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
