@@ -39,7 +39,7 @@ export function CyberpunkChartsWrapper({
           <CardHeader>
             <CardTitle className="text-white">Projects by Status</CardTitle>
             <CardDescription className="text-[#00FF41]/70">
-              Current distribution of AI projects with Department & Team breakdown
+              Current distribution of AI projects with Project Name breakdown
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -57,7 +57,7 @@ export function CyberpunkChartsWrapper({
           <CardHeader>
             <CardTitle className="text-white">Projects by Category</CardTitle>
             <CardDescription className="text-[#00FF41]/70">
-              Neural network visualization with Department & Team breakdown
+              Neural network visualization with Project Name breakdown
             </CardDescription>
           </CardHeader>
           <CardContent>

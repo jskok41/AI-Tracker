@@ -94,7 +94,7 @@ async function getDashboardData(departmentIds?: string[]) {
     _count: true,
   });
 
-  // Get all projects to derive project breakdown by Department & Team for each status
+  // Get all projects to derive project breakdown by Project Name for each status
   const allProjectsForStatusBreakdown = await prisma.aIProject.findMany({
     where,
     select: {
@@ -113,11 +113,11 @@ async function getDashboardData(departmentIds?: string[]) {
   const projectsByStatus = projectsByStatusRaw.map((statusItem) => {
     const statusProjects = allProjectsForStatusBreakdown.filter(p => p.status === statusItem.status);
     
-    // Group projects by Department & Team (similar to Category breakdown)
+    // Group projects by Project Name (similar to Category breakdown)
     const projectMap = new Map<string, number>();
     
     statusProjects.forEach(project => {
-      // Use team field (Department & Team), or department name, or project name, or "Unspecified"
+      // Use team field (Project Name), or department name, or project name, or "Unspecified"
       let projectKey = 'Unspecified';
       
       if (project.team?.trim()) {
@@ -152,7 +152,7 @@ async function getDashboardData(departmentIds?: string[]) {
     _count: true,
   });
 
-  // Get all projects to derive sub-categories from Department & Team
+  // Get all projects to derive sub-categories from Project Name
   const allProjectsForSubCategories = await prisma.aIProject.findMany({
     where,
     select: {
@@ -170,11 +170,11 @@ async function getDashboardData(departmentIds?: string[]) {
   const projectsByCategory = projectsByCategoryRaw.map((cat) => {
     const categoryProjects = allProjectsForSubCategories.filter(p => p.category === cat.category);
     
-    // Derive sub-categories from Department & Team
+    // Derive sub-categories from Project Name
     const subCategoryMap = new Map<string, number>();
     
     categoryProjects.forEach(project => {
-      // Use team field (Department & Team), or combine department name with team, or use department name, or "Unspecified"
+      // Use team field (Project Name), or combine department name with team, or use department name, or "Unspecified"
       let subCategory = 'Unspecified';
       
       if (project.team?.trim()) {

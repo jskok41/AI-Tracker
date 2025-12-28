@@ -253,7 +253,7 @@ export function CyberpunkNeuralNetwork({ categories, className }: NeuralNetworkP
                 </div>
               </div>
               
-              {/* Department & Team Breakdown */}
+              {/* Project Name Breakdown */}
               {hasSubCategories && isExpanded && (
                 <div className="ml-6 space-y-1 border-l border-[#00FF41]/20 pl-3">
                   {subCategories

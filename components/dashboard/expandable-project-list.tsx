@@ -382,7 +382,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                       <div className="flex flex-wrap gap-2 mb-4">
                         {project.team && (
                           <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/40 border-blue-300 dark:border-blue-800/40 cyberpunk:bg-black/50 cyberpunk:border-[#00FF41]/50 cyberpunk:text-[#00FF41]/90 cyberpunk:hover:bg-[#00FF41]/10">
-                            Department & Team
+                            Project Name
                           </Badge>
                         )}
                         {project.ownerContact && (
@@ -431,7 +431,7 @@ export function ExpandableProjectList({ projects }: ExpandableProjectListProps) 
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-400 cyberpunk:bg-[#00FF41] cyberpunk:shadow-[0_0_4px_rgba(0,255,65,0.5)]" />
-                              <div className="text-xs font-medium text-muted-foreground cyberpunk:text-[#00FF41]/70">Department & Team</div>
+                              <div className="text-xs font-medium text-muted-foreground cyberpunk:text-[#00FF41]/70">Project Name</div>
                             </div>
                             <div className="text-sm pl-4 cyberpunk:text-white">{project.team}</div>
                           </div>

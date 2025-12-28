@@ -196,7 +196,7 @@ export function CyberpunkStatusGauge({ statuses, className }: StatusGaugeProps) 
                 </div>
               </div>
               
-              {/* Department & Team Breakdown */}
+              {/* Project Name Breakdown */}
               {hasProjects && isExpanded && (
                 <div className="ml-6 space-y-1 border-l border-[#00FF41]/20 pl-3">
                   {projects

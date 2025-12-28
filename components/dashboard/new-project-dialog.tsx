@@ -379,7 +379,7 @@ export function NewProjectDialog({ departments, users }: NewProjectDialogProps) 
               
               <div className="grid gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="team">Department & Team (TEST/MDW, line/tool/module)</Label>
+                  <Label htmlFor="team">Project Name (TEST/MDW, line/tool/module)</Label>
                   <Input
                     id="team"
                     name="team"
