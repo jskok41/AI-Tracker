@@ -3,12 +3,21 @@ import { put, del } from '@vercel/blob';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { canEditProject } from '@/lib/permissions';
+import { validateFileUpload, checkRateLimit, getSecurityHeaders } from '@/lib/security';
 
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Security: Rate limiting for file uploads
+    if (!checkRateLimit(`upload-${session.user.id}`, 5, 60000)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { status: 429, headers: getSecurityHeaders() }
+      );
     }
 
     const formData = await request.formData();
@@ -25,14 +34,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'You do not have permission to edit this project' }, { status: 403 });
     }
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'Invalid file type. Only images are allowed.' }, { status: 400 });
-    }
+    // Security: Comprehensive file validation
+    const validation = validateFileUpload(file, {
+      maxSize: 5 * 1024 * 1024,
+      allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+      allowedExtensions: ['.jpg', '.jpeg', '.png', '.gif', '.webp'],
+    });
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 });
+    if (!validation.valid) {
+      console.error('[Security] File validation failed:', validation.error);
+      return NextResponse.json(
+        { error: validation.error },
+        { status: 400, headers: getSecurityHeaders() }
+      );
     }
 
     // Check if Blob Storage is configured
@@ -79,7 +93,10 @@ export async function POST(request: NextRequest) {
       data: { screenshotUrl: blob.url },
     });
 
-    return NextResponse.json({ url: blob.url, success: true });
+    return NextResponse.json(
+      { url: blob.url, success: true },
+      { headers: getSecurityHeaders() }
+    );
   } catch (error) {
     console.error('Upload error:', error);
     
@@ -90,13 +107,13 @@ export async function POST(request: NextRequest) {
           error: 'Blob Storage not configured. Please set up Vercel Blob Storage in your project settings.',
           setupRequired: true
         },
-        { status: 503 }
+        { status: 503, headers: getSecurityHeaders() }
       );
     }
     
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to upload screenshot' },
-      { status: 500 }
+      { status: 500, headers: getSecurityHeaders() }
     );
   }
 }

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { ProjectStatus } from '@prisma/client';
 import { logActivity } from '@/lib/services/activity-logger';
 import { auth } from '@/lib/auth';
+import { validateFormData, validateObject, checkRateLimit } from '@/lib/security';
 
 // Validation schemas
 const projectSchema = z.object({
@@ -56,10 +57,24 @@ const riskSchema = z.object({
 
 // Project actions
 export async function createProject(formData: FormData) {
+  // Security: Validate FormData for RCE protection
+  if (!validateFormData(formData)) {
+    console.error('[Security] Invalid FormData in createProject');
+    return { success: false, error: 'Invalid request data detected' };
+  }
+
   // Check if user can create projects (not guest)
   const { canEdit } = await import('@/lib/permissions');
   if (!(await canEdit())) {
     return { success: false, error: 'Guest users have view-only access.' };
+  }
+
+  // Security: Rate limiting
+  const session = await auth();
+  if (session?.user?.id) {
+    if (!checkRateLimit(`create-project-${session.user.id}`, 10, 60000)) {
+      return { success: false, error: 'Rate limit exceeded. Please try again later.' };
+    }
   }
 
   try {
@@ -88,6 +103,11 @@ export async function createProject(formData: FormData) {
     };
 
     const validated = projectSchema.parse(data);
+
+    // Security: Final object validation
+    if (!validateObject(validated)) {
+      return { success: false, error: 'Invalid data structure detected' };
+    }
 
     const project = await prisma.aIProject.create({
       data: {
@@ -121,6 +141,20 @@ export async function createProject(formData: FormData) {
 
 // Prompt actions
 export async function createPrompt(formData: FormData) {
+  // Security: Validate FormData for RCE protection
+  if (!validateFormData(formData)) {
+    console.error('[Security] Invalid FormData in createPrompt');
+    return { success: false, error: 'Invalid request data detected' };
+  }
+
+  // Security: Rate limiting
+  const session = await auth();
+  if (session?.user?.id) {
+    if (!checkRateLimit(`create-prompt-${session.user.id}`, 20, 60000)) {
+      return { success: false, error: 'Rate limit exceeded. Please try again later.' };
+    }
+  }
+
   try {
     const tagsString = formData.get('tags') as string;
     const tags = tagsString ? tagsString.split(',').map(t => t.trim()).filter(Boolean) : [];
@@ -175,6 +209,20 @@ export async function createPrompt(formData: FormData) {
 
 // Risk actions
 export async function createRisk(formData: FormData) {
+  // Security: Validate FormData for RCE protection
+  if (!validateFormData(formData)) {
+    console.error('[Security] Invalid FormData in createRisk');
+    return { success: false, error: 'Invalid request data detected' };
+  }
+
+  // Security: Rate limiting
+  const session = await auth();
+  if (session?.user?.id) {
+    if (!checkRateLimit(`create-risk-${session.user.id}`, 20, 60000)) {
+      return { success: false, error: 'Rate limit exceeded. Please try again later.' };
+    }
+  }
+
   try {
     const likelihoodMap: Record<string, number> = {
       'RARE': 1,
@@ -250,10 +298,24 @@ export async function getProjectsForSelect() {
 // ============================================================================
 
 export async function updateProject(id: string, formData: FormData) {
+  // Security: Validate FormData for RCE protection
+  if (!validateFormData(formData)) {
+    console.error('[Security] Invalid FormData in updateProject');
+    return { success: false, error: 'Invalid request data detected' };
+  }
+
   // Check if user can edit this project
   const { canEditProject } = await import('@/lib/permissions');
   if (!(await canEditProject(id))) {
     return { success: false, error: 'You do not have permission to edit this project.' };
+  }
+
+  // Security: Rate limiting
+  const session = await auth();
+  if (session?.user?.id) {
+    if (!checkRateLimit(`update-project-${session.user.id}`, 30, 60000)) {
+      return { success: false, error: 'Rate limit exceeded. Please try again later.' };
+    }
   }
 
   try {

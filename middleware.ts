@@ -1,8 +1,84 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// Security: Protect against RCE in React Server Components
+function validateRSCRequest(request: NextRequest): boolean {
+  const contentType = request.headers.get('content-type');
+  
+  // Check for suspicious RSC payloads
+  if (contentType?.includes('text/x-component')) {
+    // Validate RSC-specific headers
+    const rscHeader = request.headers.get('RSC');
+    if (!rscHeader) {
+      return false;
+    }
+  }
+  
+  // Validate content length to prevent DoS
+  const contentLength = request.headers.get('content-length');
+  if (contentLength && parseInt(contentLength) > 2 * 1024 * 1024) { // 2MB limit
+    return false;
+  }
+  
+  return true;
+}
+
+// Security: Validate and sanitize request origins
+function validateRequestOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get('origin');
+  const host = request.headers.get('host');
+  
+  // Allow same-origin requests
+  if (!origin) {
+    return true; // Same-origin requests don't have origin header
+  }
+  
+  // Validate origin matches host for server actions
+  const pathname = request.nextUrl.pathname;
+  if (pathname.startsWith('/api/') || request.method === 'POST') {
+    try {
+      const originUrl = new URL(origin);
+      // Allow localhost for development
+      if (originUrl.hostname === 'localhost' || originUrl.hostname === '127.0.0.1') {
+        return true;
+      }
+      // Check if origin matches host
+      return originUrl.host === host;
+    } catch {
+      return false;
+    }
+  }
+  
+  return true;
+}
+
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  
+  // Security: Validate RSC requests to prevent RCE
+  if (!validateRSCRequest(request)) {
+    console.error('[Security] Invalid RSC request detected:', {
+      path: pathname,
+      contentType: request.headers.get('content-type'),
+    });
+    return new NextResponse('Bad Request', { status: 400 });
+  }
+  
+  // Security: Validate request origin
+  if (!validateRequestOrigin(request)) {
+    console.error('[Security] Invalid origin detected:', {
+      path: pathname,
+      origin: request.headers.get('origin'),
+      host: request.headers.get('host'),
+    });
+    return new NextResponse('Forbidden', { status: 403 });
+  }
+  
+  // Security: Add security headers to response
+  const response = NextResponse.next();
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
   
   // Public routes that don't require authentication
   const publicRoutes = ['/auth/login', '/auth/register', '/auth/forgot-password', '/auth/reset-password'];
@@ -12,7 +88,7 @@ export function middleware(request: NextRequest) {
   const isAuthApi = pathname.startsWith('/api/auth');
   
   if (isPublicRoute || isAuthApi) {
-    return NextResponse.next();
+    return response;
   }
   
   // Check for NextAuth session token cookie
@@ -30,7 +106,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
   
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
